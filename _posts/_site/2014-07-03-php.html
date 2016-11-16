@@ -1,0 +1,23 @@
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>  
+<span class="nt">&lt;html&gt;</span>  
+<span class="nt">&lt;head&gt;</span>  
+    <span class="nt">&lt;title&gt;</span>JSONP——XML<span class="nt">&lt;/title&gt;</span>  
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"jq.js"</span><span class="nt">&gt;&lt;/script&gt;</span>  
+<span class="nt">&lt;/head&gt;</span>  
+<span class="nt">&lt;body&gt;</span>  
+<span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"divCustomers"</span><span class="nt">&gt;&lt;/div&gt;</span>  
+  
+<span class="nt">&lt;/body&gt;</span>  
+<span class="nt">&lt;/html&gt;</span>  
+<span class="nt">&lt;script&gt;</span>  
+    <span class="c1">//var url="http://api.k780.com:88/?app=idcard.get&amp;idcard=110101199001011114&amp;appkey=10003&amp;sign=b872c3e6930b7fb3576c776deede6a83&amp;format=json&amp;jsoncallback=?";  </span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">getJSON</span><span class="p">(</span><span class="s2">"http://api.k780.com:88/?app=idcard.get&amp;idcard=1410021995091***5&amp;appkey=18787&amp;sign=b872c3e6930b7fb3576c776deede6a83&amp;format=json&amp;jsoncallback=?"</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>  
+        <span class="c1">//alert(data.result.born);  </span>
+        <span class="nx">time</span><span class="o">=</span><span class="s2">"&lt;ul&gt;&lt;li&gt;"</span><span class="o">+</span><span class="nx">data</span><span class="p">.</span><span class="nx">result</span><span class="p">.</span><span class="nx">born</span><span class="o">+</span><span class="s2">"&lt;/li&gt;&lt;li&gt;"</span><span class="o">+</span><span class="nx">data</span><span class="p">.</span><span class="nx">result</span><span class="p">.</span><span class="nx">idcard</span><span class="o">+</span><span class="s2">"&lt;/li&gt;&lt;li&gt;"</span><span class="o">+</span><span class="nx">data</span><span class="p">.</span><span class="nx">result</span><span class="p">.</span><span class="nx">sex</span><span class="o">+</span><span class="s2">"&lt;/li&gt;"</span><span class="o">+</span><span class="nx">data</span><span class="p">.</span><span class="nx">result</span><span class="p">.</span><span class="nx">areano</span><span class="o">+</span><span class="s2">"&lt;/li&gt;&lt;li&gt;"</span><span class="o">+</span><span class="nx">data</span><span class="p">.</span><span class="nx">result</span><span class="p">.</span><span class="nx">style_citynm</span><span class="o">+</span><span class="s2">"&lt;/li&gt;&lt;/ul&gt;"</span><span class="p">;</span>  
+        <span class="nx">$</span><span class="p">(</span><span class="s2">"#divCustomers"</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">time</span><span class="p">);</span>  
+    <span class="p">});</span>  
+<span class="nt">&lt;/script&gt;</span>  
+</code></pre>
+</div>

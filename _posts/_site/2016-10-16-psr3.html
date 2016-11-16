@@ -1,0 +1,296 @@
+<h1 id="section">日志接口</h1>
+
+<p>本文档描述了日志类库的通用接口。</p>
+
+<p>主要目标是让类库获得一个<code class="highlighter-rouge">Psr\Log\LoggerInterface</code>对象并能通过简单通用的方式来写日志。有自定义需求的框架和CMS<code class="highlighter-rouge">可以</code>根据情况扩展这个接口，但<code class="highlighter-rouge">推荐</code>保持和该文档的兼容性，以确保应用中使用到的第三方库能将日志集中写到应用日志里。</p>
+
+<p><a href="http://tools.ietf.org/html/rfc2119">RFC 2119</a>中的<code class="highlighter-rouge">必须(MUST)</code>，<code class="highlighter-rouge">不可(MUST NOT)</code>，<code class="highlighter-rouge">建议(SHOULD)</code>，<code class="highlighter-rouge">不建议(SHOULD NOT)</code>，<code class="highlighter-rouge">可以/可能(MAY)</code>等关键词将在本节用来做一些解释性的描述。</p>
+
+<p>关键词<code class="highlighter-rouge">实现者</code>在这个文档被解释为：在日志相关的库或框架实现<code class="highlighter-rouge">LoggerInterface</code>接口的开发人员。用这些实现者开发出来的类库的人都被称作<code class="highlighter-rouge">用户</code>。</p>
+
+<ol>
+  <li>
+    <h2 id="section-1">规范</h2>
+  </li>
+</ol>
+
+<h3 id="section-2">1.1 基础</h3>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">LoggerInterface</code>暴露八个接口用来记录八个等级(debug, info, notice, warning, error, critical, alert, emergency)的日志。</p>
+  </li>
+  <li>
+    <p>第九个方法是<code class="highlighter-rouge">log</code>，接受日志等级作为第一个参数。用一个日志等级常量来调用这个方法<code class="highlighter-rouge">必须</code>和直接调用指定等级方法的结果一致。用一个本规范中未定义且不为具体实现所知的日志等级来调用该方法<code class="highlighter-rouge">必须</code>抛出一个<code class="highlighter-rouge">Psr\Log\InvalidArgumentException</code>。<code class="highlighter-rouge">不推荐</code>使用自定义的日志等级，除非你非常确定当前类库对其有所支持。</p>
+  </li>
+</ul>
+
+<h3 id="section-3">1.2 消息</h3>
+
+<ul>
+  <li>
+    <p>每个方法都接受一个字符串，或者一个有<code class="highlighter-rouge">__toString</code>方法的对象作为<code class="highlighter-rouge">message</code>参数。<code class="highlighter-rouge">实现者</code> <code class="highlighter-rouge">可以</code>对传入的对象有特殊的处理。如果没有，<code class="highlighter-rouge">实现者</code> <code class="highlighter-rouge">必须</code>将它转换成字符串。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">message</code>参数中<code class="highlighter-rouge">可能</code>包含一些<code class="highlighter-rouge">可以</code>被<code class="highlighter-rouge">context</code>参数的数值所替换的占位符。</p>
+
+    <p>占位符名字<code class="highlighter-rouge">必须</code>和<code class="highlighter-rouge">context</code>数组类型参数的键名对应。</p>
+
+    <p>占位符名字<code class="highlighter-rouge">必须</code>使用一对花括号来作为分隔符。在占位符和分隔符之间<code class="highlighter-rouge">不能</code>有任何空格。</p>
+
+    <p>占位符名字<code class="highlighter-rouge">应该</code>只能由<code class="highlighter-rouge">A-Z</code>，<code class="highlighter-rouge">a-z</code>，<code class="highlighter-rouge">0-9</code>，下划线<code class="highlighter-rouge">_</code>和句号<code class="highlighter-rouge">.</code>组成。其它的字符作为以后占位符规范的保留字。</p>
+
+    <p><code class="highlighter-rouge">实现者</code> <code class="highlighter-rouge">可以</code>使用占位符来实现不同的转义和翻译日志成文。因为<code class="highlighter-rouge">用户</code>并不知道上下文数据会是什么，所以<code class="highlighter-rouge">不推荐</code>提前转义占位符。</p>
+
+    <p>下面提供一个占位符替换的例子，仅作为参考：</p>
+
+    <p>```php
+  &lt;?php
+  /**</p>
+    <ul>
+      <li>
+        <p>Interpolates context values into the message placeholders.
+   */
+  function interpolate($message, array $context = array())
+  {
+ // build a replacement array with braces around the context keys
+ $replace = array();
+ foreach ($context as $key =&gt; $val) {
+     $replace[’{‘ . $key . ‘}’] = $val;
+ }</p>
+
+        <p>// interpolate replacement values into the message and return
+ return strtr($message, $replace);
+  }</p>
+      </li>
+    </ul>
+
+    <p>// a message with brace-delimited placeholder names
+  $message = “User {username} created”;</p>
+
+    <p>// a context array of placeholder names =&gt; replacement values
+  $context = array(‘username’ =&gt; ‘bolivar’);</p>
+
+    <p>// echoes “Username bolivar created”
+  echo interpolate($message, $context);
+  ```</p>
+  </li>
+</ul>
+
+<h3 id="section-4">1.3 上下文</h3>
+
+<ul>
+  <li>
+    <p>每个方法接受一个数组作为<code class="highlighter-rouge">context</code>参数，用来存储不适合在字符串中填充的信息。数组可以包括任何东西。<code class="highlighter-rouge">实现者</code> <code class="highlighter-rouge">必须</code>确保他们尽可能包容的对<code class="highlighter-rouge">context</code>参数进行处理。一个<code class="highlighter-rouge">context</code>参数的给定值<code class="highlighter-rouge">不可</code>导致抛出异常，也<code class="highlighter-rouge">不可</code>产生任何PHP错误，警告或者提醒。</p>
+  </li>
+  <li>
+    <p>如果在<code class="highlighter-rouge">context</code>参数中传入了一个<code class="highlighter-rouge">异常</code>对象，它必须以<code class="highlighter-rouge">exception</code>作为键名。记录异常轨迹是通用的模式，并且可以在日志系统支持的情况下从异常中提取出整个调用栈。<code class="highlighter-rouge">实现者</code>在将<code class="highlighter-rouge">exception</code>当做<code class="highlighter-rouge">异常</code>对象来使用之前<code class="highlighter-rouge">必须</code>去验证它是不是一个<code class="highlighter-rouge">异常</code>对象，因为它<code class="highlighter-rouge">可能</code>包含着任何东西。</p>
+  </li>
+</ul>
+
+<h3 id="section-5">1.4 助手类和接口</h3>
+
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">Psr\Log\AbstractLogger</code>类可以让你通过继承它并实现通用的<code class="highlighter-rouge">log</code>方法来方便的实现<code class="highlighter-rouge">LoggerInterface</code>接口。而其他八个方法将会把消息和上下文转发给<code class="highlighter-rouge">log</code>方法。</p>
+  </li>
+  <li>
+    <p>类似的，使用<code class="highlighter-rouge">Psr\Log\LoggerTrait</code>只需要你实现通用的<code class="highlighter-rouge">log</code>方法。注意特性是不能用来实现接口的，所以你依然需要在你的类中<code class="highlighter-rouge">implement LoggerInterface</code>。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Psr\Log\NullLogger</code>是和接口一起提供的。它在没有可用的日志记录器时，<code class="highlighter-rouge">可以</code>为使用日志接口的<code class="highlighter-rouge">用户</code>们提供一个后备的“黑洞”。但是，当<code class="highlighter-rouge">context</code>参数的构建非常耗时的时候，直接判断是否需要记录日志可能是个更好的选择。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Psr\Log\LoggerAwareInterface</code>只有一个<code class="highlighter-rouge">setLogger(LoggerInterface $logger)</code>方法，它可以在框架中用来随意设置一个日志记录器。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Psr\Log\LoggerAwareTrait</code>特性可以被用来在各个类中轻松实现相同的接口。通过它可以访问到<code class="highlighter-rouge">$this-&gt;logger</code>。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Psr\Log\LogLevel</code>类拥有八个日志等级的常量。</p>
+  </li>
+</ul>
+
+<ol>
+  <li>
+    <h2 id="section-6">包</h2>
+  </li>
+</ol>
+
+<p><a href="https://packagist.org/packages/psr/log">psr/log</a>中提供了上文描述过的接口和类，以及相关的异常类，还有一组用来验证你的实现的单元测试。</p>
+
+<ol>
+  <li>
+    <h2 id="psrlogloggerinterface"><code class="highlighter-rouge">Psr\Log\LoggerInterface</code></h2>
+  </li>
+</ol>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">Psr\Log</span><span class="p">;</span>
+
+<span class="sd">/**
+ * Describes a logger instance
+ *
+ * The message MUST be a string or object implementing __toString().
+ *
+ * The message MAY contain placeholders in the form: {foo} where foo
+ * will be replaced by the context data in key "foo".
+ *
+ * The context array can contain arbitrary data, the only assumption that
+ * can be made by implementors is that if an Exception instance is given
+ * to produce a stack trace, it MUST be in a key named "exception".
+ *
+ * See https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md
+ * for the full interface specification.
+ */</span>
+<span class="k">interface</span> <span class="nx">LoggerInterface</span>
+<span class="p">{</span>
+    <span class="sd">/**
+     * System is unusable.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">emergency</span><span class="p">(</span><span class="nv">$message</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$context</span> <span class="o">=</span> <span class="k">array</span><span class="p">());</span>
+
+    <span class="sd">/**
+     * Action must be taken immediately.
+     *
+     * Example: Entire website down, database unavailable, etc. This should
+     * trigger the SMS alerts and wake you up.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">alert</span><span class="p">(</span><span class="nv">$message</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$context</span> <span class="o">=</span> <span class="k">array</span><span class="p">());</span>
+
+    <span class="sd">/**
+     * Critical conditions.
+     *
+     * Example: Application component unavailable, unexpected exception.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">critical</span><span class="p">(</span><span class="nv">$message</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$context</span> <span class="o">=</span> <span class="k">array</span><span class="p">());</span>
+
+    <span class="sd">/**
+     * Runtime errors that do not require immediate action but should typically
+     * be logged and monitored.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">error</span><span class="p">(</span><span class="nv">$message</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$context</span> <span class="o">=</span> <span class="k">array</span><span class="p">());</span>
+
+    <span class="sd">/**
+     * Exceptional occurrences that are not errors.
+     *
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things
+     * that are not necessarily wrong.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">warning</span><span class="p">(</span><span class="nv">$message</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$context</span> <span class="o">=</span> <span class="k">array</span><span class="p">());</span>
+
+    <span class="sd">/**
+     * Normal but significant events.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">notice</span><span class="p">(</span><span class="nv">$message</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$context</span> <span class="o">=</span> <span class="k">array</span><span class="p">());</span>
+
+    <span class="sd">/**
+     * Interesting events.
+     *
+     * Example: User logs in, SQL logs.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">info</span><span class="p">(</span><span class="nv">$message</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$context</span> <span class="o">=</span> <span class="k">array</span><span class="p">());</span>
+
+    <span class="sd">/**
+     * Detailed debug information.
+     *
+     * @param string $message
+     * @param array $context
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">debug</span><span class="p">(</span><span class="nv">$message</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$context</span> <span class="o">=</span> <span class="k">array</span><span class="p">());</span>
+
+    <span class="sd">/**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed $level
+     * @param string $message
+     * @param array $context
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">log</span><span class="p">(</span><span class="nv">$level</span><span class="p">,</span> <span class="nv">$message</span><span class="p">,</span> <span class="k">array</span> <span class="nv">$context</span> <span class="o">=</span> <span class="k">array</span><span class="p">());</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<ol>
+  <li>
+    <h2 id="psrlogloggerawareinterface"><code class="highlighter-rouge">Psr\Log\LoggerAwareInterface</code></h2>
+  </li>
+</ol>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">Psr\Log</span><span class="p">;</span>
+
+<span class="sd">/**
+ * Describes a logger-aware instance
+ */</span>
+<span class="k">interface</span> <span class="nx">LoggerAwareInterface</span>
+<span class="p">{</span>
+    <span class="sd">/**
+     * Sets a logger instance on the object
+     *
+     * @param LoggerInterface $logger
+     * @return null
+     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">setLogger</span><span class="p">(</span><span class="nx">LoggerInterface</span> <span class="nv">$logger</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<ol>
+  <li>
+    <h2 id="psrlogloglevel"><code class="highlighter-rouge">Psr\Log\LogLevel</code></h2>
+  </li>
+</ol>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">namespace</span> <span class="nx">Psr\Log</span><span class="p">;</span>
+
+<span class="sd">/**
+ * Describes log levels
+ */</span>
+<span class="k">class</span> <span class="nc">LogLevel</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="no">EMERGENCY</span> <span class="o">=</span> <span class="s1">'emergency'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">ALERT</span>     <span class="o">=</span> <span class="s1">'alert'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">CRITICAL</span>  <span class="o">=</span> <span class="s1">'critical'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">ERROR</span>     <span class="o">=</span> <span class="s1">'error'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">WARNING</span>   <span class="o">=</span> <span class="s1">'warning'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">NOTICE</span>    <span class="o">=</span> <span class="s1">'notice'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">INFO</span>      <span class="o">=</span> <span class="s1">'info'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">DEBUG</span>     <span class="o">=</span> <span class="s1">'debug'</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>

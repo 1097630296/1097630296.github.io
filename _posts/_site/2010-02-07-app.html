@@ -1,0 +1,80 @@
+<p>1：单例模式连接数据库：</p>
+
+<p>2：首页接口开发以及客户端APP演示</p>
+
+<p>3：APP版本升级以及APP演示</p>
+
+<p>4：APP错误日志接口</p>
+
+<p>一：单例模式连接数据库</p>
+
+<p>[php]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;?php   
+class Db{  
+static private $_instance;  
+static private $_connectSource;  
+private $_dbConfig =array (  
+   'host'=&gt;'127.0.0.1',  
+   'user'=&gt;'root',  
+   'password'=&gt;'root',  
+   'database'=&gt;'test'  
+);  
+private function __construct(){  
+      
+}  
+  
+Static public function getInstance(){  
+   
+     if(!(self::$_instance instanceof self))  
+     {  
+         self::$_instance=new self();  
+     }  
+       
+     return self::$_instance;  
+}  
+  
+public function connect(){  
+    if(!self::$_connectSource)  
+    {  
+    self::$_connectSource=mysql_connect($this-&gt;_dbConfig['host'],$this-&gt;_dbConfig['user'],$this-&gt;_dbConfig['password']);  
+    if(!self::$_connectSource)  
+    {  
+        die('mysql connect error'.mysql_error());  
+    }  
+      
+    mysql_select_db($this-&gt;_dbConfig['database']);  
+  
+    mysql_query("set names UTF8",self::$_connectSource);  
+    }  
+      
+    return self::$_connectSource;  
+      
+      
+      
+}  
+}  
+  
+  
+$connect=Db::getInstance()-&gt;connect();  
+  
+var_dump($connect);  
+</code></pre>
+</div>
+
+<p>二：首页接口开发以及客户端APP演示</p>
+
+<p>方案一：读取数据库方式(时效性高);</p>
+
+<p>方案二：读取缓存;</p>
+
+<p>方案三：定时读取缓存;</p>
+
+<p>工具：下载安卓模拟器：</p>
+
+<p>三：APP版本升级以及APP演示</p>
+
+<p>开启APP-&gt;检测是否更新（是,否）</p>
+
+<p>四：APP错误日志接口</p>
+

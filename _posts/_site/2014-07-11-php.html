@@ -1,0 +1,73 @@
+<p>//控制器方法
+[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;span style="color:#FF0000;"&gt;public function index()  
+{  
+       $arr=array(  
+           'pid'=&gt;0  
+       );  
+       $list['i']=$this-&gt;db-&gt;get_where("address",$arr)-&gt;result_array();  
+       $this-&gt;load-&gt;view('welcome_message',$list);  
+}  
+   public function addressNext(){  
+       $arr=array(  
+           'pid'=&gt; $_GET['pid']  
+       );  
+       $list['i']=$this-&gt;db-&gt;get_where("address",$arr)-&gt;result_array();  
+       $this-&gt;load-&gt;view('addressNext',$list);  
+   }&lt;/span&gt;&lt;span style="color:#e1efff;"&gt;  
+  
+&lt;!-- addressNext.php --&lt;/span&gt;  
+</code></pre>
+</div>
+
+<p><option value="-1">请选择</option></p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;span style="color:#FF0000;"&gt;&lt;?php  
+foreach($i as $v){  
+    ?&gt;  
+    &lt;option value="&lt;?php echo $v['id']  ?&gt;"&gt;&lt;?php  echo $v['username'] ?&gt;&lt;/option&gt;  
+&lt;?php  
+}  
+?&gt;&lt;/span&gt;  
+</code></pre>
+</div>
+
+<p>//视图</p>
+
+<!--welcome_message.php-->
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;span style="color:#FF0000;"&gt;&lt;p&gt;四级联动&lt;/p&gt;  
+&lt;script src="&lt;?php echo base_url("public/jq.js")  ?&gt;"&gt;&lt;/script&gt;  
+&lt;select name="address" id="address" class="address"&gt;  
+    &lt;option value="-1"&gt;请选择&lt;/option&gt;  
+    &lt;?php  
+    foreach($i as $v){  
+        ?&gt;  
+        &lt;option value="&lt;?php echo $v['id']  ?&gt;"&gt;&lt;?php  echo $v['username'] ?&gt;&lt;/option&gt;  
+    &lt;?php  
+    }  
+    ?&gt;  
+&lt;/select&gt;  
+&lt;select name="" id="address" class="address"&gt;&lt;/select&gt;  
+&lt;select name="" id="address" class="address"&gt;&lt;/select&gt;  
+&lt;select name="" id="address" class="address"&gt;&lt;/select&gt;  
+  
+&lt;!--引用jquery事件--&gt;  
+  
+&lt;script&gt;  
+    $(document).on("change",'.address',function(){  
+        var val=$(this).val();  
+        //alert(val);die;  
+        ob=$(this).next();  
+        $.get("&lt;?php echo site_url("welcome/addressNext") ?&gt;",{pid:val},function(data){  
+            ob.html(data);  
+        })  
+    })  
+&lt;/script&gt;&lt;/span&gt;  
+</code></pre>
+</div>

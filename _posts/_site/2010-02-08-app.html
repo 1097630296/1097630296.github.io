@@ -1,0 +1,57 @@
+<ol>
+  <li>
+    <p>APP接口（通信接口）</p>
+
+    <p>接口地址：例如：http://app.com/api.php 
+ 接口文件：api.php处理一些业务逻辑（获取数据）
+ 接口数据：获取数据，传到客户端进行使用</p>
+
+    <p>APP接口的核心在于接口文件</p>
+  </li>
+  <li>APP接口如何进行通信
+  客户端向服务器端发送http请求（用户不可视的接口地址），服务器端收到http请求之后根据请求做出相应的处理，处理结束后向客户端返回数据（数据一般为XML和JSON两种格式）。</li>
+  <li>
+    <p>XML数据及JSON数据</p>
+
+    <p>XML数据</p>
+
+    <p>XML –&gt; Extensible Markup Language 扩展标记语言</p>
+
+    <p>用来标记语言数据，定义数据类型，是一种允许用户对自己的标记语言进行定义的源语言。XML语言的节点可以自定义，HTML语言的节点（标签）不可以自定义，例如：&lt;p&gt;、<h>等。
+  XML语言格式统一，跨平台和语言。</h></p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>  &lt;? xml version = "1.0" encoding = "UTF-8" ?&gt;
+  &lt;item&gt;
+       &lt;title&gt;singwa&lt;/title&gt;
+       &lt;test id = "1" /&gt;
+  &lt;/item&gt;
+</code></pre>
+    </div>
+
+    <p>XML语言必须且只能拥有一个根节点<item></item></p>
+
+    <p>JSON数据</p>
+
+    <p>JSON –&gt; JavaScript Object Notation</p>
+
+    <p>一种轻量级的数据交换格式，具有良好的可读性，便于快速编写。采用兼容性很高的，完全独立于语言的文本格式。</p>
+
+    <p>XML与JSON的区别</p>
+
+    <p>可读性 	XML数据的可读性更强（结构清晰）
+ 生成数据方面（php生成XML及JSON） 	JSON只使用一个函数，方便
+ 传输速度 	JSON数据小，传输速度也快</p>
+  </li>
+  <li>
+    <p>APP接口功能</p>
+
+    <p>获取数据</p>
+
+    <p>从数据库中或缓存中获取数据，然后通过接口数据返回给客户端</p>
+
+    <p>提交数据</p>
+
+    <p>通过接口提交数据给服务器，然后服务器入库处理或做其他处理。提交数据的接口包含两种：版本升级接口和数据接收接口</p>
+  </li>
+</ol>
+

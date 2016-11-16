@@ -1,0 +1,138 @@
+<p>[php]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;?php  
+/** 
+  * wechat php test 
+  */  
+  
+//define your token  
+define("TOKEN", "weixin");  
+$wechatObj = new wechatCallbackapiTest();  
+//$wechatObj-&gt;valid();  
+if(!isset($_GET["echostr"])){  
+     $wechatObj-&gt;responseMsg();  
+}else{  
+ $wechatObj-&gt;valid();  
+}  
+  
+class wechatCallbackapiTest  
+{  
+    public function valid()  
+    {  
+        $echoStr = $_GET["echostr"];  
+        if($this-&gt;checkSignature()){  
+            echo $echoStr;  
+            //$this-&gt;responseMsg();  
+            exit;  
+        }  
+    }  
+  
+    public function responseMsg()  
+    {  
+        $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];  
+          
+        if (!empty($postStr)){  
+        $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);  
+        $RX_TYPE = trim($postObj-&gt;MsgType);  
+                switch($RX_TYPE)  
+                {  
+                    case "text":  
+                        $resultStr = $this-&gt;handleText($postObj);  
+                        break;  
+                    case "event":  
+                        $resultStr = $this-&gt;handleEvent($postObj);  
+                        break;  
+                    default:  
+                        $resultStr = "Unknow msg type: ".$RX_TYPE;  
+                        break;  
+                }  
+                echo $resultStr;  
+                //$fromUsername = $postObj-&gt;FromUserName;  
+                //$toUsername = $postObj-&gt;ToUserName;  
+                //$keyword = trim($postObj-&gt;Content);  
+                //$time = time();  
+                //$textTpl = "&lt;xml&gt;  
+                //          &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;  
+                //          &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;  
+                //          &lt;CreateTime&gt;%s&lt;/CreateTime&gt;  
+                //          &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;  
+                //          &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;  
+                //          &lt;FuncFlag&gt;0&lt;/FuncFlag&gt;  
+                //          &lt;/xml&gt;";               
+                //if(!empty( $keyword ))  
+                //{  
+                //  $msgType = "text";  
+                //  $contentStr = "你好啊，屌丝1";  
+                //  $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);  
+                //  echo $resultStr;  
+                //}else{  
+                //  echo "你好啊，屌丝1";  
+                //}  
+  
+        }else {  
+            echo "";  
+            exit;  
+        }  
+    }  
+    public function handleEvent($object)  
+    {  
+        $contentStr = "";  
+        switch ($object-&gt;Event)  
+        {  
+            case "subscribe":  
+                $contentStr = "感谢您关注【微卖】"."\n"."我们为您提供全国各地的生活指南，做最好的外卖微信平台。"."\n"."目前平台功能如下："."\n"."【1】 查天气，如输入：本地天气"."\n"."【2】 查公交，如输入：本地公交178"."\n"."【3】 翻译，如输入：翻译I love you"."\n"."【4】 本地信息查询，如输入："."\n"."更多内容，敬请期待...";  
+                break;  
+            default :  
+                $contentStr = "Unknow Event: ".$object-&gt;Event;  
+                break;  
+        }  
+        $resultStr = $this-&gt;responseText($object, $contentStr);  
+        return $resultStr;  
+    }  
+      
+    public function responseText($object, $content, $flag=0)  
+    {  
+        $textTpl = "&lt;xml&gt;  
+                    &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;  
+                    &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;  
+                    &lt;CreateTime&gt;%s&lt;/CreateTime&gt;  
+                    &lt;MsgType&gt;&lt;![CDATA[text]]&gt;&lt;/MsgType&gt;  
+                    &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;  
+                    &lt;FuncFlag&gt;%d&lt;/FuncFlag&gt;  
+                    &lt;/xml&gt;";  
+        $resultStr = sprintf($textTpl, $object-&gt;FromUserName, $object-&gt;ToUserName, time(), $content, $flag);  
+        return $resultStr;  
+    }  
+      
+      
+  
+    private function checkSignature()  
+    {  
+        // you must define TOKEN by yourself  
+        if (!defined("TOKEN")) {  
+            throw new Exception('TOKEN is not defined!');  
+        }  
+          
+        $signature = $_GET["signature"];  
+        $timestamp = $_GET["timestamp"];  
+        $nonce = $_GET["nonce"];  
+                  
+        $token = TOKEN;  
+        $tmpArr = array($token, $timestamp, $nonce);  
+        // use SORT_STRING rule  
+        sort($tmpArr, SORT_STRING);  
+        $tmpStr = implode( $tmpArr );  
+        $tmpStr = sha1( $tmpStr );  
+        return true;  
+        if( $tmpStr == $signature ){  
+            return true;  
+        }else{  
+            return false;  
+        }  
+    }  
+}  
+  
+?&gt;  
+</code></pre>
+</div>
+

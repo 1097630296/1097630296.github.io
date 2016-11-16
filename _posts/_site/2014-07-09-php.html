@@ -1,0 +1,30 @@
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function bbb(){  
+     header("content-type:application/json,charset=utf-8");//*  
+     $url="http://zphteach.com/zph/8wei/json/json.php";  
+     $file=file_get_contents($url);  
+     $b=json_decode($file,true);  
+     //print_r($b);die;  
+     $b[0]['name']="zhangsan's";  
+  
+     $b[1]['name']="lisi&lt;zhangsan";  
+  
+  
+     header("content-type:application/xml");//*  
+     //print_r($b);die;  
+     echo '&lt;?xml version="1.0" encoding="utf-8" ?&gt;';  
+     echo "&lt;note&gt;";  
+     foreach($b as $key =&gt; $val){  
+         echo "&lt;rows&gt;";  
+             foreach($val as $k =&gt; $v){  
+                 echo "&lt;a&gt;";  
+                 echo $v;  
+                 echo "&lt;/a&gt;";  
+             }  
+         echo "&lt;/rows&gt;";  
+     }  
+     echo '&lt;/note&gt;';  
+ }  
+</code></pre>
+</div>

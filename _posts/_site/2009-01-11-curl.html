@@ -1,0 +1,89 @@
+<ul id="markdown-toc">
+  <li><a href="#i-classfa--fa-useri-" id="markdown-toc-i-classfa--fa-useri-"><i class="fa  fa-user"></i> 请求接口</a></li>
+  <li><a href="#i-classfa-fa-eyei-cookie" id="markdown-toc-i-classfa-fa-eyei-cookie"><i class="fa fa-eye"></i> 请求接口（当cookie认证登陆的时候）</a></li>
+</ul>
+
+<h2 id="i-classfa--fa-useri-"><i class="fa  fa-user"></i> 请求接口</h2>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>    header('content-type:text/html;charset=utf-8');  
+    function curlPost($url,$data,$method){  
+        $ch = curl_init();   //1.初始化  
+        curl_setopt($ch, CURLOPT_URL, $url); //2.请求地址  
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);//3.请求方式  
+        //4.参数如下  
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);//https  
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);  
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');//模拟浏览器  
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);  
+        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);  
+            curl_setopt($ch, CURLOPT_HTTPHEADER,array('Accept-Encoding: gzip, deflate'));//gzip解压内容  
+            curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');  
+          
+        if($method=="POST"){//5.post方式的时候添加数据  
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);  
+        }  
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  
+        $tmpInfo = curl_exec($ch);//6.执行  
+      
+        if (curl_errno($ch)) {//7.如果出错  
+            return curl_error($ch);  
+        }  
+        curl_close($ch);//8.关闭  
+        return $tmpInfo;  
+    }  
+    $data=array('name' =&gt; '1234');  
+    $url="http://www.sohu.com/";  
+      
+    $method="GET";  
+    $file=curlPost($url,$data,$method);  
+    $file=mb_convert_encoding($file,'UTF-8','GBK');  
+    echo $file;  
+</code></pre>
+</div>
+
+<h2 id="i-classfa-fa-eyei-cookie"><i class="fa fa-eye"></i> 请求接口（当cookie认证登陆的时候）</h2>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="nt">&lt;pre&gt;&lt;code&gt;</span>
+    <span class="cp">&lt;?php</span>  
+        <span class="nv">$cookie_file</span> <span class="o">=</span> <span class="nb">tempnam</span><span class="p">(</span><span class="s1">'./temp'</span><span class="p">,</span><span class="s1">'cookie'</span><span class="p">);</span>  
+        <span class="k">function</span> <span class="nf">weixinPost</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$data</span><span class="p">,</span><span class="nv">$method</span><span class="p">,</span><span class="nv">$setcooke</span><span class="o">=</span><span class="kc">false</span><span class="p">,</span><span class="nv">$cookie_file</span><span class="o">=</span><span class="kc">false</span><span class="p">){</span>  
+            <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>   <span class="c1">//1.初始化  
+</span>            <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$url</span><span class="p">);</span> <span class="c1">//2.请求地址  
+</span>            <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_CUSTOMREQUEST</span><span class="p">,</span> <span class="nv">$method</span><span class="p">);</span><span class="c1">//3.请求方式  
+</span>            <span class="c1">//4.参数如下      
+</span>            <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="k">FALSE</span><span class="p">);</span>  
+            <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYHOST</span><span class="p">,</span> <span class="k">FALSE</span><span class="p">);</span>  
+            <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_USERAGENT</span><span class="p">,</span> <span class="s1">'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)'</span><span class="p">);</span>  
+            <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>  
+            <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_AUTOREFERER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>  
+              
+            <span class="k">if</span><span class="p">(</span><span class="nv">$method</span><span class="o">==</span><span class="s2">"POST"</span><span class="p">){</span><span class="c1">//5.post方式的时候添加数据     
+</span>                <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>  
+            <span class="p">}</span>  
+            <span class="k">if</span><span class="p">(</span><span class="nv">$setcooke</span><span class="o">==</span><span class="kc">true</span><span class="p">){</span>  
+                <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_COOKIEJAR</span><span class="p">,</span> <span class="nv">$cookie_file</span><span class="p">);</span>  
+            <span class="p">}</span><span class="k">else</span><span class="p">{</span>  
+                <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_COOKIEFILE</span><span class="p">,</span> <span class="nv">$cookie_file</span><span class="p">);</span>  
+            <span class="p">}</span>  
+            <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>  
+            <span class="nv">$tmpInfo</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span><span class="c1">//6.执行  
+</span>      
+            <span class="k">if</span> <span class="p">(</span><span class="nb">curl_errno</span><span class="p">(</span><span class="nv">$ch</span><span class="p">))</span> <span class="p">{</span><span class="c1">//7.如果出错  
+</span>                <span class="k">return</span> <span class="nb">curl_error</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>  
+            <span class="p">}</span>  
+            <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span><span class="c1">//8.关闭  
+</span>            <span class="k">return</span> <span class="nv">$tmpInfo</span><span class="p">;</span>  
+        <span class="p">}</span>  
+        <span class="nv">$data</span><span class="o">=</span><span class="k">array</span><span class="p">(</span><span class="s1">'username'</span> <span class="o">=&gt;</span> <span class="s1">'***'</span><span class="p">,</span><span class="s1">'password'</span><span class="o">=&gt;</span><span class="s1">'***'</span><span class="p">);</span>  
+        <span class="nv">$url</span><span class="o">=</span><span class="s2">"http://www.xinxinj.com/login.php"</span><span class="p">;</span>  
+        <span class="nv">$method</span><span class="o">=</span><span class="s2">"POST"</span><span class="p">;</span>  
+        <span class="nv">$file</span><span class="o">=</span><span class="nx">weixinPost</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$data</span><span class="p">,</span><span class="nv">$method</span><span class="p">,</span><span class="kc">true</span><span class="p">,</span><span class="nv">$cookie_file</span><span class="p">);</span>  
+        <span class="k">echo</span> <span class="nv">$file</span><span class="p">;</span>  
+              
+        <span class="nv">$url</span><span class="o">=</span><span class="s2">"http://www.xinxinj.com/admin.php"</span><span class="p">;</span>  
+        <span class="nv">$method</span><span class="o">=</span><span class="s2">"GET"</span><span class="p">;</span>  
+        <span class="nv">$file</span><span class="o">=</span><span class="nx">weixinPost</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span><span class="nv">$data</span><span class="p">,</span><span class="nv">$method</span><span class="p">,</span><span class="kc">false</span><span class="p">,</span><span class="nv">$cookie_file</span><span class="p">);</span>  
+        <span class="k">echo</span> <span class="nv">$file</span><span class="p">;</span>  
+              
+    <span class="cp">?&gt;</span>  
+</code></pre>
+</div>

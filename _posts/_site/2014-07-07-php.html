@@ -1,0 +1,52 @@
+<p>[python] view plain copy</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;td width="10%"&gt;&lt;span class="num" id="&lt;?php echo $v['cat_id'] ?&gt;"&gt;&lt;?php echo $v['measure_unit']?&gt;&lt;/span&gt;&lt;/td&gt;  
+</code></pre>
+</div>
+
+<p>[python] view plain copy</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;script&gt;  
+  
+               $(document).on('click','.num',function(){  
+        var id=$(this).attr('id');  
+        var _this=$(this);  
+        var new_val=$(this).html();  
+        _this.parent().html("&lt;input type='text'class='asdf' value="+new_val+" id="+id+"&gt;");  
+        var inp=$('.asdf');  
+        inp.focus();  
+        inp.blur(function(){  
+            var old_id=$(this).attr('id');  
+            var old_val=$(this).val();  
+            //inp.parent().html("&lt;span class=\"num\" id="+old_id+"&gt;"+old_val+"&lt;/span&gt;");  
+            $.get("&lt;?php echo base_url("index.php/good/gai") ?&gt;",{measure_unit:old_val,id:old_id},function(e){  
+                if(e==1){  
+                    inp.parent().html("&lt;span class=\"num\" id="+old_id+"&gt;"+old_val+"&lt;/span&gt;");  
+                }else{  
+                    inp.parent().html("&lt;span class=\"num\" id="+old_id+"&gt;"+new_val+"&lt;/span&gt;");  
+                }  
+            })  
+        })  
+    })  
+  
+&lt;/script&gt;  
+</code></pre>
+</div>
+
+<p>控制器中的方法
+[python] view plain copy</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function gai()  
+{  
+    $data['measure_unit'] = $_GET['measure_unit'];  
+    $data['cat_id'] = $_GET['id'];  
+    $arr = $this-&gt;db-&gt;update("category", $data, array('cat_id' =&gt; $data['cat_id']));  
+    //var_dump($arr);die;  
+    if ($arr) {  
+        echo 1;  
+    } else {  
+        echo 0;  
+    }  
+}  
+</code></pre>
+</div>

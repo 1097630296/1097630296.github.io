@@ -1,0 +1,23 @@
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function sendemail()  
+{     
+    $config = array('protocol'=&gt;'smtp',  
+        'smtp_host' =&gt; 'smtp.163.com',  
+        'smtp_user' =&gt; '邮箱的用户名',  
+        'smtp_pass' =&gt; '自身邮箱密码',  
+        'smtp_port' =&gt; '25',  
+        '_smtp_auth' =&gt; TRUE,  
+        'wordwrap' =&gt; TRUE,  
+        'charset' =&gt; 'iso-8859-1'  
+  
+    );  
+    $this-&gt;load-&gt;library('email', $config);  
+    $this-&gt;email-&gt;from('用户邮箱@163.com', '用户');  
+    $this-&gt;email-&gt;to('发送到哪个邮箱@163.com');  
+    $this-&gt;email-&gt;subject('文件标题');  
+    $this-&gt;email-&gt;message('文件内容');  
+    $this-&gt;email-&gt;send();  
+}  
+</code></pre>
+</div>

@@ -1,0 +1,272 @@
+<div class="highlighter-rouge"><pre class="highlight"><code>01：我们首先注册一个微信订阅号  
+02： （1）进入后台，进行消息自动回复，自定义菜单的操作  
+     （2）接口调用，自己开发。  
+首先：我用的是测试号开发.(因为权限的限制)  
+(地址：https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login)  
+      APPID:***  
+      APPSECRET:***  
+  
+对接  
+URL:(换成自己的)  
+Token:( 换成自己的)  
+      进行对接在微信开发开发手册中 PHP (demo),放入上面的URL的地址中(记得Token换一下)  
+      对接成功后我们就可以愉快的开发了，是不是有点小激动。  
+&lt;pre name="code" class="php"&gt;1：获取access_token  
+        
+   access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。开发者需要进行妥善保存。access_token的存储至少要保留512个字符空间。access_token的有效期目前为2个小时，需定时刷新，重复获取将导致上次获取的access_token失效。  
+  
+接口地址：  
+http请求方式: GET  
+https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=APPID&amp;secret=APPSECRET  
+  
+  
+这里我们需要知道：  
+appid：***  
+secret：***  
+很巧我们已经知道了。  
+  
+正常情况下，微信会返回下述JSON数据包给公众号：   
+{"access_token":"ACCESS_TOKEN","expires_in":7200}  
+
+
+
+2：被动消息回复  
+   01：文本回复：  
+   在demo实例中我们可以发现：  
+   [php] view plain copy
+   public function responseMsg()  
+   {  
+        //get post data, May be due to the different environments  
+        $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];  
+  
+        //extract post data  
+        if (!empty($postStr)){  
+                /* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection, 
+                   the best way is to check the validity of xml by yourself */  
+                libxml_disable_entity_loader(true);  
+                $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);  
+                $fromUsername = $postObj-&gt;FromUserName;  
+                $toUsername = $postObj-&gt;ToUserName;  
+                $keyword = trim($postObj-&gt;Content);  
+                $time = time();  
+                $textTpl = "&lt;xml&gt;  
+                &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;  
+                &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;  
+                &lt;CreateTime&gt;%s&lt;/CreateTime&gt;  
+                &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;  
+                &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;  
+                &lt;FuncFlag&gt;0&lt;/FuncFlag&gt;  
+                &lt;/xml&gt;";               
+        if(!empty( $keyword ))  
+                {  
+                    $msgType = "text";  
+                    $contentStr = "Welcome to wechat world!";  
+                    $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);  
+                    echo $resultStr;  
+                }else{  
+                    echo "Input something...";  
+                }  
+  
+        }else {  
+            echo "";  
+            exit;  
+        }  
+     }  
+  
+     如上面实例中：我们可以看到  
+     $contentStr = "Welcome to wechat world!";   
+     现在我们可以测试一下，关注公众号：  
+     发送数据，  
+     看到返回回来的正是：$contentStr  
+     （这个$contentStr 我们可以改成自己喜欢的，哈哈）  
+
+
+
+
+       02：图片回复：  
+       可以看到在demo中  
+       $msgType = "text";  
+       是不是觉得改成$msgType = "image"就行了？ 这是错误的。  
+       我们可以仔细的分析一下demo  
+   [php] view plain copy
+            if(!empty( $keyword ))  
+                {  
+                    $msgType = "text";  
+                    $contentStr = "Welcome to wechat world!";  
+                    $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);  
+                    echo $resultStr;  
+                }else{  
+                    echo "Input something...";  
+                }  
+  
+   $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);  
+  
+    这里面的参数：  
+   $textTpl  是不是是文本类型的？  
+    所以我们要改成image 的类型：     
+              [php] view plain copy
+               $imgTpl = "&lt;xml&gt;  
+               &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;  
+               &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;  
+               &lt;CreateTime&gt;%s&lt;/CreateTime&gt;  
+               &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;  
+               &lt;Image&gt;  
+                           &lt;MediaId&gt;&lt;![CDATA[%s]]&gt;&lt;/MediaId&gt;  
+                           &lt;/Image &gt;  
+            &lt;/xml&gt;";  
+               注意到现在还没有完了。  
+               参数里的$contentStr可不是文本的$contentStr = "Welcome to wechat world!";  
+  
+               应该是$mediald了。  
+               那么问题就来了？  
+               Mediald从哪来？是什么？  
+               Mediald是一个文件的唯一标示。  
+  
+               我们上传文件才能获取Mediald  
+  
+               所以我们就的上传文件，调动接口了。  
+               在开发文档的素材管理中：  
+               新增临时素材：  
+               接口地址：https://api.weixin.qq.com/cgi-bin/media/upload?access_token=ACCESS_TOKEN&amp;type=TYPE  
+  
+               这里我们需要获取access_token值(上面我们已经获取到了)  
+  
+               Type的类型：image  
+  
+               成功的时候回返回  
+               {"type":"TYPE","media_id":"MEDIA_ID","created_at":123456789}  
+  
+               我们拿到media_id值，  
+  
+               $mediald=media_id值  
+  
+               然而这个参数写成：  
+               $resultStr = sprintf($imgTpl, $fromUsername, $toUsername, $time, $msgType, $mediald);  
+  
+  
+               我们也可以指定一个规则：  
+                [php] view plain copy
+                if(!empty( $keyword ))  
+                {  
+                  If($keyword==”img”)  
+                   {  
+                    $imgTpl = "&lt;xml&gt;  
+                   &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;  
+                   &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;  
+                   &lt;CreateTime&gt;%s&lt;/CreateTime&gt;  
+                   &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;  
+                   &lt;Image&gt;  
+                               &lt;MediaId&gt;&lt;![CDATA[%s]]&gt;&lt;/MediaId&gt;  
+                               &lt;/Image &gt;  
+                   &lt;/xml&gt;";  
+                        $msgType = "image";  
+                    $mediald=media_id;  
+                    $resultStr = sprintf($imgTpl, $fromUsername, $toUsername, $time, $msgType, $mediald);  
+                    echo $resultStr;  
+  
+                  }  
+                   else  
+                  {  
+                    $msgType = "text";  
+                    $contentStr = "Welcome to wechat world!";  
+                    $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);  
+                    echo $resultStr;  
+                  }                  
+                  }else{  
+                    echo "Input something...";  
+                  }  
+ 进行测试;  
+这样是不感觉特别爽呀！！！  
+&lt;p&gt;3：开发Oauth2.0 的授权：&lt;/p&gt;&lt;p&gt;   我们可以先看一下文档&lt;/p&gt;&lt;p&gt;&lt;a target=_blank href="https://mp.weixin.qq.com/wiki/4/9ac2e7b1f1d22e9e57260f6553822520.html#.E7.AC.AC.E4.B8.80.E6.AD.A5.EF.BC.9A.E7.94.A8.E6.88.B7.E5.90.8C.E6.84.8F.E6.8E.88.E6.9D.83.EF.BC.8C.E8.8E.B7.E5.8F.96code"&gt;第一步：用户同意授权，获取code&lt;/a&gt;&lt;/p&gt;&lt;pre&gt; &lt;a target=_blank href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&amp;redirect_uri=REDIRECT_URI&amp;response_type=code&amp;scope=SCOPE&amp;state=STATE#wechat_redirect" target="_blank"&gt;https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&amp;redirect_uri=REDIRECT_URI&amp;response_type=code&amp;scope=SCOPE&amp;state=STATE#wechat_redirect&lt;/a&gt;  
+</code></pre>
+</div>
+
+<p>这里的参数：</p>
+
+<p>Appid：公众号的唯一标识</p>
+
+<p>redirect_uri：授权后重定向的回调链接地址，请使用urlencode对链接进行处理</p>
+
+<p>scope: ……</p>
+
+<p>用户同意授权后</p>
+
+<p>如果用户同意授权，页面将跳转至 redirect_uri/?code=CODE&amp;state=STATE。若用户禁止授权，则重定向后不会带上code参数，仅会带上state参数redirect_uri?state=STATE</p>
+
+<p>我们可以接一下code值：</p>
+
+<p>$code=$_GET[‘code’]</p>
+
+<p>第二步：通过code换取网页授权access_token</p>
+
+<p>这里access_token可不是以上的那个access_token</p>
+
+<p>获取code后，请求以下链接获取access_token：</p>
+
+<p>https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&amp;secret=SECRET&amp;code=CODE&amp;grant_type=authorization_code</p>
+
+<p>成功以后：</p>
+
+<p>{</p>
+
+<p>“access_token”:”ACCESS_TOKEN”,</p>
+
+<p>“expires_in”:7200,</p>
+
+<p>“refresh_token”:”REFRESH_TOKEN”,</p>
+
+<p>“openid”:”OPENID”,</p>
+
+<p>“scope”:”SCOPE”</p>
+
+<p>}</p>
+
+<p>我们会获取很多数据.</p>
+
+<p>openid</p>
+
+<p>access_token</p>
+
+<p>第三步：拉取用户信息</p>
+
+<p>http：GET（请使用https协议）</p>
+
+<p>https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&amp;openid=OPENID&amp;lang=zh_CN</p>
+
+<p>access_token：</p>
+
+<p>opened:</p>
+
+<p>我们都获取到了。</p>
+
+<p>调用成功后我们就可以获取用户的信息了。</p>
+
+<p>{</p>
+
+<p>“openid”:” OPENID”,</p>
+
+<p>” nickname”: NICKNAME,</p>
+
+<p>“sex”:”1”,</p>
+
+<p>“province”:”PROVINCE”</p>
+
+<p>“city”:”CITY”,</p>
+
+<p>“country”:”COUNTRY”,</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>"headimgurl":    " http://wx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46", 
+
+    "privilege":[
+
+    "PRIVILEGE1"
+
+    "PRIVILEGE2"
+
+],
+
+"unionid": "o6_bmasdasdsad6_2sgVt7hMZOPfL"
+</code></pre>
+</div>
+
+<p>}</p>

@@ -1,0 +1,758 @@
+<h1 id="section">代码风格指南</h1>
+
+<p>本手册是基础代码规范(<a href="https://github.com/hfcorriez/fig-standards/blob/zh_CN/接受/PSR-1-basic-coding-standard.md">PSR-1</a>)的继承和扩展。</p>
+
+<p>为了尽可能的提升阅读其他人代码时的效率，下面例举了一系列的通用规则，特别是有关于PHP代码风格的。</p>
+
+<p>各个成员项目间的共性组成了这组代码规范。当开发者们在多个项目中合作时，本指南将会成为所有这些项目中共用的一组代码规范。 因此，本指南的益处不在于这些规则本身，而在于在所有项目中共用这些规则。</p>
+
+<p><a href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119</a>中的<code class="highlighter-rouge">必须(MUST)</code>，<code class="highlighter-rouge">不可(MUST NOT)</code>，<code class="highlighter-rouge">建议(SHOULD)</code>，<code class="highlighter-rouge">不建议(SHOULD NOT)</code>，<code class="highlighter-rouge">可以/可能(MAY)</code>等关键词将在本节用来做一些解释性的描述。</p>
+
+<ol>
+  <li>
+    <h2 id="section-1">概述</h2>
+  </li>
+</ol>
+
+<ul>
+  <li>
+    <p>代码<code class="highlighter-rouge">必须</code>遵守 <a href="https://github.com/hfcorriez/fig-standards/blob/zh_CN/接受/PSR-1-basic-coding-standard.md">PSR-1</a>。</p>
+  </li>
+  <li>
+    <p>代码<code class="highlighter-rouge">必须</code>使用4个空格来进行缩进，而不是用制表符。</p>
+  </li>
+  <li>
+    <p>一行代码的长度<code class="highlighter-rouge">不建议</code>有硬限制；软限制<code class="highlighter-rouge">必须</code>为120个字符，<code class="highlighter-rouge">建议</code>每行代码80个字符或者更少。</p>
+  </li>
+  <li>
+    <p>在<code class="highlighter-rouge">命名空间(namespace)</code>的声明下面<code class="highlighter-rouge">必须</code>有一行空行，并且在<code class="highlighter-rouge">导入(use)</code>的声明下面也<code class="highlighter-rouge">必须</code>有一行空行。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">类(class)</code>的左花括号<code class="highlighter-rouge">必须</code>放到其声明下面自成一行，右花括号则<code class="highlighter-rouge">必须</code>放到类主体下面自成一行。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">方法(method)</code>的左花括号<code class="highlighter-rouge">必须</code>放到其声明下面自成一行，右花括号则<code class="highlighter-rouge">必须</code>放到方法主体的下一行。</p>
+  </li>
+  <li>
+    <p>所有的<code class="highlighter-rouge">属性(property)</code>和<code class="highlighter-rouge">方法(method)</code> <code class="highlighter-rouge">必须</code>有可见性声明；<code class="highlighter-rouge">抽象(abstract)</code>和<code class="highlighter-rouge">终结(final)</code>声明<code class="highlighter-rouge">必须</code>在可见性声明之前；而<code class="highlighter-rouge">静态(static)</code>声明<code class="highlighter-rouge">必须</code>在可见性声明之后。</p>
+  </li>
+  <li>
+    <p>在控制结构关键字的后面<code class="highlighter-rouge">必须</code>有一个空格；而<code class="highlighter-rouge">方法(method)</code>和<code class="highlighter-rouge">函数(function)</code>的关键字的后面<code class="highlighter-rouge">不可</code>有空格。</p>
+  </li>
+  <li>
+    <p>控制结构的左花括号<code class="highlighter-rouge">必须</code>跟其放在同一行，右花括号<code class="highlighter-rouge">必须</code>放在该控制结构代码主体的下一行。</p>
+  </li>
+  <li>
+    <p>控制结构的左括号之后<code class="highlighter-rouge">不可</code>有空格，右括号之前也<code class="highlighter-rouge">不可</code>有空格。</p>
+  </li>
+</ul>
+
+<h3 id="section-2">1.1. 示例</h3>
+
+<p>这个示例中简单展示了上文中提到的一些规则：</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Package</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">FooInterface</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">BarClass</span> <span class="k">as</span> <span class="nx">Bar</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">OtherVendor\OtherPackage\BazClass</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Foo</span> <span class="k">extends</span> <span class="nx">Bar</span> <span class="k">implements</span> <span class="nx">FooInterface</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">sampleFunction</span><span class="p">(</span><span class="nv">$a</span><span class="p">,</span> <span class="nv">$b</span> <span class="o">=</span> <span class="kc">null</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$a</span> <span class="o">===</span> <span class="nv">$b</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">bar</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">elseif</span> <span class="p">(</span><span class="nv">$a</span> <span class="o">&gt;</span> <span class="nv">$b</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nv">$foo</span><span class="o">-&gt;</span><span class="na">bar</span><span class="p">(</span><span class="nv">$arg1</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">BazClass</span><span class="o">::</span><span class="na">bar</span><span class="p">(</span><span class="nv">$arg2</span><span class="p">,</span> <span class="nv">$arg3</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">final</span> <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">bar</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// 方法主体
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<ol>
+  <li>
+    <h2 id="section-3">通则</h2>
+  </li>
+</ol>
+
+<h3 id="section-4">2.1 基础代码规范</h3>
+
+<p>代码<code class="highlighter-rouge">必须</code>遵守 <a href="https://github.com/hfcorriez/fig-standards/blob/zh_CN/接受/PSR-1-basic-coding-standard.md">PSR-1</a> 中的所有规则。</p>
+
+<h3 id="section-5">2.2 源文件</h3>
+
+<p>所有的PHP源文件<code class="highlighter-rouge">必须</code>使用Unix LF(换行)作为行结束符。</p>
+
+<p>所有PHP源文件<code class="highlighter-rouge">必须</code>以一个空行结束。</p>
+
+<p>纯PHP代码源文件的关闭标签<code class="highlighter-rouge">?&gt;</code> <code class="highlighter-rouge">必须</code>省略。</p>
+
+<h3 id="section-6">2.3. 行</h3>
+
+<p>行长度<code class="highlighter-rouge">不可</code>有硬限制。</p>
+
+<p>行长度的软限制<code class="highlighter-rouge">必须</code>是120个字符；对于软限制，代码风格检查器<code class="highlighter-rouge">必须</code>警告但<code class="highlighter-rouge">不可</code>报错。</p>
+
+<p>一行代码的长度<code class="highlighter-rouge">不建议</code>超过80个字符；较长的行<code class="highlighter-rouge">建议</code>拆分成多个不超过80个字符的子行。</p>
+
+<p>在非空行后面<code class="highlighter-rouge">不可</code>有空格。</p>
+
+<p>空行<code class="highlighter-rouge">可以</code>用来增强可读性和区分相关代码块。</p>
+
+<p>一行<code class="highlighter-rouge">不可</code>多于一个语句。</p>
+
+<h3 id="section-7">2.4. 缩进</h3>
+
+<p>代码<code class="highlighter-rouge">必须</code>使用4个空格，且<code class="highlighter-rouge">不可</code>使用制表符来作为缩进。</p>
+
+<blockquote>
+  <p>注意：代码中只使用空格，且不和制表符混合使用，将会对避免代码差异，补丁，历史和注解中的一些问题有帮助。空格的使用还可以使通过调整细微的缩进来改进行间对齐变得更加的简单。</p>
+</blockquote>
+
+<h3 id="truefalsenull">2.5. 关键字和 True/False/Null</h3>
+
+<p>PHP关键字(<a href="http://php.net/manual/en/reserved.keywords.php">keywords</a>)<code class="highlighter-rouge">必须</code>使用小写字母。</p>
+
+<p>PHP常量<code class="highlighter-rouge">true</code>, <code class="highlighter-rouge">false</code>和<code class="highlighter-rouge">null</code> <code class="highlighter-rouge">必须</code>使用小写字母。</p>
+
+<ol>
+  <li>
+    <h2 id="namespaceuse"><code class="highlighter-rouge">命名空间(Namespace)</code>和<code class="highlighter-rouge">导入(Use)</code>声明</h2>
+  </li>
+</ol>
+
+<p><code class="highlighter-rouge">命名空间(namespace)</code>的声明后面<code class="highlighter-rouge">必须</code>有一行空行。</p>
+
+<p>所有的<code class="highlighter-rouge">导入(use)</code>声明<code class="highlighter-rouge">必须</code>放在<code class="highlighter-rouge">命名空间(namespace)</code>声明的下面。</p>
+
+<p>一句声明中，<code class="highlighter-rouge">必须</code>只有一个<code class="highlighter-rouge">导入(use)</code>关键字。</p>
+
+<p>在<code class="highlighter-rouge">导入(use)</code>声明代码块后面<code class="highlighter-rouge">必须</code>有一行空行。</p>
+
+<p>示例：</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Package</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">FooClass</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">BarClass</span> <span class="k">as</span> <span class="nx">Bar</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">OtherVendor\OtherPackage\BazClass</span><span class="p">;</span>
+
+<span class="c1">// ... 其它PHP代码 ...
+</span>
+</code></pre>
+</div>
+
+<ol>
+  <li>
+    <h2 id="classpropertymethod"><code class="highlighter-rouge">类(class)</code>，<code class="highlighter-rouge">属性(property)</code>和<code class="highlighter-rouge">方法(method)</code></h2>
+  </li>
+</ol>
+
+<p>术语“类”指所有的<code class="highlighter-rouge">类(class)</code>，<code class="highlighter-rouge">接口(interface)</code>和<code class="highlighter-rouge">特性(trait)</code>。</p>
+
+<h3 id="extendimplement">4.1. <code class="highlighter-rouge">扩展(extend)</code>和<code class="highlighter-rouge">实现(implement)</code></h3>
+
+<p>一个类的<code class="highlighter-rouge">扩展(extend)</code>和<code class="highlighter-rouge">实现(implement)</code>关键词<code class="highlighter-rouge">必须</code>和<code class="highlighter-rouge">类名(class name)</code>在同一行。</p>
+
+<p><code class="highlighter-rouge">类(class)</code>的左花括号<code class="highlighter-rouge">必须</code>放在下面自成一行；右花括号必须放在<code class="highlighter-rouge">类(class)</code>主体的后面自成一行。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Package</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">FooClass</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">BarClass</span> <span class="k">as</span> <span class="nx">Bar</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">OtherVendor\OtherPackage\BazClass</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ClassName</span> <span class="k">extends</span> <span class="nx">ParentClass</span> <span class="k">implements</span> <span class="nx">\ArrayAccess</span><span class="p">,</span> <span class="nx">\Countable</span>
+<span class="p">{</span>
+    <span class="c1">// 常量、属性、方法
+</span><span class="p">}</span>
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">实现(implement)</code>列表<code class="highlighter-rouge">可以</code>被拆分为多个缩进了一次的子行。如果要拆成多个子行，列表的第一项<code class="highlighter-rouge">必须</code>要放在下一行，并且每行<code class="highlighter-rouge">必须</code>只有一个<code class="highlighter-rouge">接口(interface)</code>。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Package</span><span class="p">;</span>
+
+<span class="k">use</span> <span class="nx">FooClass</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">BarClass</span> <span class="k">as</span> <span class="nx">Bar</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">OtherVendor\OtherPackage\BazClass</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ClassName</span> <span class="k">extends</span> <span class="nx">ParentClass</span> <span class="k">implements</span>
+    <span class="nx">\ArrayAccess</span><span class="p">,</span>
+    <span class="nx">\Countable</span><span class="p">,</span>
+    <span class="nx">\Serializable</span>
+<span class="p">{</span>
+    <span class="c1">// 常量、属性、方法
+</span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="property">4.2. <code class="highlighter-rouge">属性(property)</code></h3>
+
+<p>所有的<code class="highlighter-rouge">属性(property)</code>都<code class="highlighter-rouge">必须</code>声明其可见性。</p>
+
+<p><code class="highlighter-rouge">变量(var)</code>关键字<code class="highlighter-rouge">不可</code>用来声明一个<code class="highlighter-rouge">属性(property)</code>。</p>
+
+<p>一条语句<code class="highlighter-rouge">不可</code>声明多个<code class="highlighter-rouge">属性(property)</code>。</p>
+
+<p><code class="highlighter-rouge">属性名(property name)</code> <code class="highlighter-rouge">不推荐</code>用单个下划线作为前缀来表明其<code class="highlighter-rouge">保护(protected)</code>或<code class="highlighter-rouge">私有(private)</code>的可见性。</p>
+
+<p>一个<code class="highlighter-rouge">属性(property)</code>声明看起来应该像下面这样。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Package</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ClassName</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nv">$foo</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="method">4.3. <code class="highlighter-rouge">方法(method)</code></h3>
+
+<p>所有的<code class="highlighter-rouge">方法(method)</code>都<code class="highlighter-rouge">必须</code>声明其可见性。</p>
+
+<p><code class="highlighter-rouge">方法名(method name)</code> <code class="highlighter-rouge">不推荐</code>用单个下划线作为前缀来表明其<code class="highlighter-rouge">保护(protected)</code>或<code class="highlighter-rouge">私有(private)</code>的可见性。</p>
+
+<p><code class="highlighter-rouge">方法名(method name)</code>在其声明后面<code class="highlighter-rouge">不可</code>有空格跟随。其左花括号<code class="highlighter-rouge">必须</code>放在下面自成一行，且右花括号<code class="highlighter-rouge">必须</code>放在方法主体的下面自成一行。左括号后面<code class="highlighter-rouge">不可</code>有空格，且右括号前面也<code class="highlighter-rouge">不可</code>有空格。</p>
+
+<p>一个<code class="highlighter-rouge">方法(method)</code>声明看来应该像下面这样。 注意括号，逗号，空格和花括号的位置：</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Package</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ClassName</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">fooBarBaz</span><span class="p">(</span><span class="nv">$arg1</span><span class="p">,</span> <span class="o">&amp;</span><span class="nv">$arg2</span><span class="p">,</span> <span class="nv">$arg3</span> <span class="o">=</span> <span class="p">[])</span>
+    <span class="p">{</span>
+        <span class="c1">// 方法主体部分
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="method-1">4.4. <code class="highlighter-rouge">方法(method)</code>的参数</h3>
+
+<p>在参数列表中，逗号之前<code class="highlighter-rouge">不可</code>有空格，而逗号之后则<code class="highlighter-rouge">必须</code>要有一个空格。</p>
+
+<p><code class="highlighter-rouge">方法(method)</code>中有默认值的参数必须放在参数列表的最后面。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Package</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ClassName</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">foo</span><span class="p">(</span><span class="nv">$arg1</span><span class="p">,</span> <span class="o">&amp;</span><span class="nv">$arg2</span><span class="p">,</span> <span class="nv">$arg3</span> <span class="o">=</span> <span class="p">[])</span>
+    <span class="p">{</span>
+        <span class="c1">// 方法主体部分
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>参数列表<code class="highlighter-rouge">可以</code>被拆分为多个缩进了一次的子行。如果要拆分成多个子行，参数列表的第一项<code class="highlighter-rouge">必须</code>放在下一行，并且每行<code class="highlighter-rouge">必须</code>只有一个参数。</p>
+
+<p>当参数列表被拆分成多个子行，右括号和左花括号之间<code class="highlighter-rouge">必须</code>又一个空格并且自成一行。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Package</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ClassName</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">aVeryLongMethodName</span><span class="p">(</span>
+        <span class="nx">ClassTypeHint</span> <span class="nv">$arg1</span><span class="p">,</span>
+        <span class="o">&amp;</span><span class="nv">$arg2</span><span class="p">,</span>
+        <span class="k">array</span> <span class="nv">$arg3</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 方法主体部分
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="abstractfinal-static">4.5. <code class="highlighter-rouge">抽象(abstract)</code>，<code class="highlighter-rouge">终结(final)</code>和 <code class="highlighter-rouge">静态(static)</code></h3>
+
+<p>当用到<code class="highlighter-rouge">抽象(abstract)</code>和<code class="highlighter-rouge">终结(final)</code>来做类声明时，它们<code class="highlighter-rouge">必须</code>放在可见性声明的前面。</p>
+
+<p>而当用到<code class="highlighter-rouge">静态(static)</code>来做类声明时，则<code class="highlighter-rouge">必须</code>放在可见性声明的后面。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Package</span><span class="p">;</span>
+
+<span class="k">abstract</span> <span class="k">class</span> <span class="nc">ClassName</span>
+<span class="p">{</span>
+    <span class="k">protected</span> <span class="k">static</span> <span class="nv">$foo</span><span class="p">;</span>
+
+    <span class="k">abstract</span> <span class="k">protected</span> <span class="k">function</span> <span class="nf">zim</span><span class="p">();</span>
+
+    <span class="k">final</span> <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="nf">bar</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// 方法主体部分
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="section-8">4.6. 调用方法和函数</h3>
+
+<p>调用一个方法或函数时，在方法名或者函数名和左括号之间<code class="highlighter-rouge">不可</code>有空格，左括号之后<code class="highlighter-rouge">不可</code>有空格，右括号之前也<code class="highlighter-rouge">不可</code>有空格。参数列表中，逗号之前<code class="highlighter-rouge">不可</code>有空格，逗号之后则<code class="highlighter-rouge">必须</code>有一个空格。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nx">bar</span><span class="p">();</span>
+<span class="nv">$foo</span><span class="o">-&gt;</span><span class="na">bar</span><span class="p">(</span><span class="nv">$arg1</span><span class="p">);</span>
+<span class="nx">Foo</span><span class="o">::</span><span class="na">bar</span><span class="p">(</span><span class="nv">$arg2</span><span class="p">,</span> <span class="nv">$arg3</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<p>参数列表<code class="highlighter-rouge">可以</code>被拆分成多个缩进了一次的子行。如果拆分成子行，列表中的第一项<code class="highlighter-rouge">必须</code>放在下一行，并且每一行<code class="highlighter-rouge">必须</code>只能有一个参数。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nv">$foo</span><span class="o">-&gt;</span><span class="na">bar</span><span class="p">(</span>
+    <span class="nv">$longArgument</span><span class="p">,</span>
+    <span class="nv">$longerArgument</span><span class="p">,</span>
+    <span class="nv">$muchLongerArgument</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<ol>
+  <li>
+    <h2 id="section-9">控制结构</h2>
+  </li>
+</ol>
+
+<p>下面是对于控制结构代码风格的概括：</p>
+
+<ul>
+  <li>控制结构的关键词之后<code class="highlighter-rouge">必须</code>有一个空格。</li>
+  <li>控制结构的左括号之后<code class="highlighter-rouge">不可</code>有空格。</li>
+  <li>控制结构的右括号之前<code class="highlighter-rouge">不可</code>有空格。</li>
+  <li>控制结构的右括号和左花括号之间<code class="highlighter-rouge">必须</code>有一个空格。</li>
+  <li>控制结构的代码主体<code class="highlighter-rouge">必须</code>进行一次缩进。</li>
+  <li>控制结构的右花括号<code class="highlighter-rouge">必须</code>主体的下一行。</li>
+</ul>
+
+<p>每个控制结构的代码主体<code class="highlighter-rouge">必须</code>被括在花括号里。这样可是使代码看上去更加标准化，并且加入新代码的时候还可以因此而减少引入错误的可能性。</p>
+
+<h3 id="ifelseifelse">5.1. <code class="highlighter-rouge">if</code>，<code class="highlighter-rouge">elseif</code>，<code class="highlighter-rouge">else</code></h3>
+
+<p>下面是一个<code class="highlighter-rouge">if</code>条件控制结构的示例，注意其中括号，空格和花括号的位置。同时注意<code class="highlighter-rouge">else</code>和<code class="highlighter-rouge">elseif</code>要和前一个条件控制结构的右花括号在同一行。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$expr1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// if body
+</span><span class="p">}</span> <span class="k">elseif</span> <span class="p">(</span><span class="nv">$expr2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// elseif body
+</span><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="c1">// else body;
+</span><span class="p">}</span>
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">推荐</code>用<code class="highlighter-rouge">elseif</code>来替代<code class="highlighter-rouge">else if</code>，以保持所有的条件控制关键字看起来像是一个单词。</p>
+
+<h3 id="switchcase">5.2. <code class="highlighter-rouge">switch</code>，<code class="highlighter-rouge">case</code></h3>
+
+<p>下面是一个<code class="highlighter-rouge">switch</code>条件控制结构的示例，注意其中括号，空格和花括号的位置。<code class="highlighter-rouge">case</code>语句<code class="highlighter-rouge">必须</code>要缩进一级，而<code class="highlighter-rouge">break</code>关键字（或其他中止关键字）<code class="highlighter-rouge">必须</code>和<code class="highlighter-rouge">case</code>结构的代码主体在同一个缩进层级。如果一个有主体代码的<code class="highlighter-rouge">case</code>结构故意的继续向下执行则<code class="highlighter-rouge">必须</code>要有一个类似于<code class="highlighter-rouge">// no break</code>的注释。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">switch</span> <span class="p">(</span><span class="nv">$expr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="mi">0</span><span class="o">:</span>
+        <span class="k">echo</span> <span class="s1">'First case, with a break'</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
+        <span class="k">echo</span> <span class="s1">'Second case, which falls through'</span><span class="p">;</span>
+        <span class="c1">// no break
+</span>    <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
+    <span class="k">case</span> <span class="mi">3</span><span class="o">:</span>
+    <span class="k">case</span> <span class="mi">4</span><span class="o">:</span>
+        <span class="k">echo</span> <span class="s1">'Third case, return instead of break'</span><span class="p">;</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="k">default</span><span class="o">:</span>
+        <span class="k">echo</span> <span class="s1">'Default case'</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="whiledo-while">5.3. <code class="highlighter-rouge">while</code>，<code class="highlighter-rouge">do while</code></h3>
+
+<p>下面是一个<code class="highlighter-rouge">while</code>循环控制结构的示例，注意其中括号，空格和花括号的位置。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">while</span> <span class="p">(</span><span class="nv">$expr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// structure body
+</span><span class="p">}</span>
+</code></pre>
+</div>
+
+<p>下面是一个<code class="highlighter-rouge">do while</code>循环控制结构的示例，注意其中括号，空格和花括号的位置。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">do</span> <span class="p">{</span>
+    <span class="c1">// structure body;
+</span><span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nv">$expr</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<h3 id="for">5.4. <code class="highlighter-rouge">for</code></h3>
+
+<p>下面是一个<code class="highlighter-rouge">for</code>循环控制结构的示例，注意其中括号，空格和花括号的位置。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// for body
+</span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="foreach">5.5. <code class="highlighter-rouge">foreach</code></h3>
+
+<p>下面是一个<code class="highlighter-rouge">foreach</code>循环控制结构的示例，注意其中括号，空格和花括号的位置。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$iterable</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// foreach body
+</span><span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="try-catch">5.6. <code class="highlighter-rouge">try</code>, <code class="highlighter-rouge">catch</code></h3>
+
+<p>下面是一个<code class="highlighter-rouge">try catch</code>异常处理控制结构的示例，注意其中括号，空格和花括号的位置。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">try</span> <span class="p">{</span>
+    <span class="c1">// try body
+</span><span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">FirstExceptionType</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// catch body
+</span><span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">OtherExceptionType</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// catch body
+</span><span class="p">}</span>
+</code></pre>
+</div>
+
+<ol>
+  <li>
+    <h2 id="section-10">闭包</h2>
+  </li>
+</ol>
+
+<p>声明闭包时所用的<code class="highlighter-rouge">function</code>关键字之后<code class="highlighter-rouge">必须</code>要有一个空格，而<code class="highlighter-rouge">use</code>关键字的前后都要有一个空格。</p>
+
+<p>闭包的左花括号<code class="highlighter-rouge">必须</code>跟其在同一行，而右花括号<code class="highlighter-rouge">必须</code>在闭包主体的下一行。</p>
+
+<p>闭包的参数列表和变量列表的左括号后面<code class="highlighter-rouge">不可</code>有空格，右括号的前面也<code class="highlighter-rouge">不可</code>有空格。</p>
+
+<p>闭包的参数列表和变量列表中逗号前面<code class="highlighter-rouge">不可</code>有空格，而逗号后面则<code class="highlighter-rouge">必须</code>有空格。</p>
+
+<p>闭包的参数列表中带默认值的参数<code class="highlighter-rouge">必须</code>放在参数列表的结尾部分。</p>
+
+<p>下面是一个闭包的示例。注意括号，空格和花括号的位置。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nv">$closureWithArgs</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$arg1</span><span class="p">,</span> <span class="nv">$arg2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// body
+</span><span class="p">};</span>
+
+<span class="nv">$closureWithArgsAndVars</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$arg1</span><span class="p">,</span> <span class="nv">$arg2</span><span class="p">)</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$var1</span><span class="p">,</span> <span class="nv">$var2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// body
+</span><span class="p">};</span>
+</code></pre>
+</div>
+
+<p>参数列表和变量列表<code class="highlighter-rouge">可以</code>被拆分成多个缩进了一级的子行。如果要拆分成多个子行，列表中的第一项<code class="highlighter-rouge">必须</code>放在下一行，并且每一行<code class="highlighter-rouge">必须</code>只放一个参数或变量。</p>
+
+<p>当列表（不管是参数还是变量）最终被拆分成多个子行，右括号和左花括号之间<code class="highlighter-rouge">必须</code>要有一个空格并且自成一行。</p>
+
+<p>下面是一个参数列表和变量列表被拆分成多个子行的示例。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nv">$longArgs_noVars</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>
+    <span class="nv">$longArgument</span><span class="p">,</span>
+    <span class="nv">$longerArgument</span><span class="p">,</span>
+    <span class="nv">$muchLongerArgument</span>
+<span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// body
+</span><span class="p">};</span>
+
+<span class="nv">$noArgs_longVars</span> <span class="o">=</span> <span class="k">function</span> <span class="p">()</span> <span class="k">use</span> <span class="p">(</span>
+    <span class="nv">$longVar1</span><span class="p">,</span>
+    <span class="nv">$longerVar2</span><span class="p">,</span>
+    <span class="nv">$muchLongerVar3</span>
+<span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// body
+</span><span class="p">};</span>
+
+<span class="nv">$longArgs_longVars</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>
+    <span class="nv">$longArgument</span><span class="p">,</span>
+    <span class="nv">$longerArgument</span><span class="p">,</span>
+    <span class="nv">$muchLongerArgument</span>
+<span class="p">)</span> <span class="k">use</span> <span class="p">(</span>
+    <span class="nv">$longVar1</span><span class="p">,</span>
+    <span class="nv">$longerVar2</span><span class="p">,</span>
+    <span class="nv">$muchLongerVar3</span>
+<span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// body
+</span><span class="p">};</span>
+
+<span class="nv">$longArgs_shortVars</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>
+    <span class="nv">$longArgument</span><span class="p">,</span>
+    <span class="nv">$longerArgument</span><span class="p">,</span>
+    <span class="nv">$muchLongerArgument</span>
+<span class="p">)</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$var1</span><span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// body
+</span><span class="p">};</span>
+
+<span class="nv">$shortArgs_longVars</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$arg</span><span class="p">)</span> <span class="k">use</span> <span class="p">(</span>
+    <span class="nv">$longVar1</span><span class="p">,</span>
+    <span class="nv">$longerVar2</span><span class="p">,</span>
+    <span class="nv">$muchLongerVar3</span>
+<span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// body
+</span><span class="p">};</span>
+</code></pre>
+</div>
+
+<p>把闭包作为一个参数在函数或者方法中调用时，依然要遵守上述规则。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nv">$foo</span><span class="o">-&gt;</span><span class="na">bar</span><span class="p">(</span>
+    <span class="nv">$arg1</span><span class="p">,</span>
+    <span class="k">function</span> <span class="p">(</span><span class="nv">$arg2</span><span class="p">)</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$var1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// body
+</span>    <span class="p">},</span>
+    <span class="nv">$arg3</span>
+<span class="p">);</span>
+</code></pre>
+</div>
+
+<ol>
+  <li>
+    <h2 id="section-11">结论</h2>
+  </li>
+</ol>
+
+<p>本指南有意的省略了许多元素的代码风格。主要包括：</p>
+
+<ul>
+  <li>
+    <p>全局变量和全局常量的声明</p>
+  </li>
+  <li>
+    <p>函数声明</p>
+  </li>
+  <li>
+    <p>操作符和赋值</p>
+  </li>
+  <li>
+    <p>行间对齐</p>
+  </li>
+  <li>
+    <p>注释和文档块</p>
+  </li>
+  <li>
+    <p>类名的前缀和后缀</p>
+  </li>
+  <li>
+    <p>最佳实践</p>
+  </li>
+</ul>
+
+<p>以后的代码规范中<code class="highlighter-rouge">可能</code>会修正或扩展本指南中规定的代码风格。</p>
+
+<h2 id="a-">附录A 调查</h2>
+
+<p>为了写这个风格指南，我们调查了各个项目以最终确定通用的代码风格。并把这次调查在这里公布出来。</p>
+
+<h3 id="a1-">A.1. 调查数据</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>url,http://www.horde.org/apps/horde/docs/CODING_STANDARDS,http://pear.php.net/manual/en/standards.php,http://solarphp.com/manual/appendix-standards.style,http://framework.zend.com/manual/en/coding-standard.html,http://symfony.com/doc/2.0/contributing/code/standards.html,http://www.ppi.io/docs/coding-standards.html,https://github.com/ezsystems/ezp-next/wiki/codingstandards,http://book.cakephp.org/2.0/en/contributing/cakephp-coding-conventions.html,https://github.com/UnionOfRAD/lithium/wiki/Spec%3A-Coding,http://drupal.org/coding-standards,http://code.google.com/p/sabredav/,http://area51.phpbb.com/docs/31x/coding-guidelines.html,https://docs.google.com/a/zikula.org/document/edit?authkey=CPCU0Us&amp;hgd=1&amp;id=1fcqb93Sn-hR9c0mkN6m_tyWnmEvoswKBtSc0tKkZmJA,http://www.chisimba.com,n/a,https://github.com/Respect/project-info/blob/master/coding-standards-sample.php,n/a,Object Calisthenics for PHP,http://doc.nette.org/en/coding-standard,http://flow3.typo3.org,https://github.com/propelorm/Propel2/wiki/Coding-Standards,http://developer.joomla.org/coding-standards.html
+voting,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,no,no,no,?,yes,no,yes
+indent_type,4,4,4,4,4,tab,4,tab,tab,2,4,tab,4,4,4,4,4,4,tab,tab,4,tab
+line_length_limit_soft,75,75,75,75,no,85,120,120,80,80,80,no,100,80,80,?,?,120,80,120,no,150
+line_length_limit_hard,85,85,85,85,no,no,no,no,100,?,no,no,no,100,100,?,120,120,no,no,no,no
+class_names,studly,studly,studly,studly,studly,studly,studly,studly,studly,studly,studly,lower_under,studly,lower,studly,studly,studly,studly,?,studly,studly,studly
+class_brace_line,next,next,next,next,next,same,next,same,same,same,same,next,next,next,next,next,next,next,next,same,next,next
+constant_names,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper,upper
+true_false_null,lower,lower,lower,lower,lower,lower,lower,lower,lower,upper,lower,lower,lower,upper,lower,lower,lower,lower,lower,upper,lower,lower
+method_names,camel,camel,camel,camel,camel,camel,camel,camel,camel,camel,camel,lower_under,camel,camel,camel,camel,camel,camel,camel,camel,camel,camel
+method_brace_line,next,next,next,next,next,same,next,same,same,same,same,next,next,same,next,next,next,next,next,same,next,next
+control_brace_line,same,same,same,same,same,same,next,same,same,same,same,next,same,same,next,same,same,same,same,same,same,next
+control_space_after,yes,yes,yes,yes,yes,no,yes,yes,yes,yes,no,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes
+always_use_control_braces,yes,yes,yes,yes,yes,yes,no,yes,yes,yes,no,yes,yes,yes,yes,no,yes,yes,yes,yes,yes,yes
+else_elseif_line,same,same,same,same,same,same,next,same,same,next,same,next,same,next,next,same,same,same,same,same,same,next
+case_break_indent_from_switch,0/1,0/1,0/1,1/2,1/2,1/2,1/2,1/1,1/1,1/2,1/2,1/1,1/2,1/2,1/2,1/2,1/2,1/2,0/1,1/1,1/2,1/2
+function_space_after,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no
+closing_php_tag_required,no,no,no,no,no,no,no,no,yes,no,no,no,no,yes,no,no,no,no,no,yes,no,no
+line_endings,LF,LF,LF,LF,LF,LF,LF,LF,?,LF,?,LF,LF,LF,LF,?,,LF,?,LF,LF,LF
+static_or_visibility_first,static,?,static,either,either,either,visibility,visibility,visibility,either,static,either,?,visibility,?,?,either,either,visibility,visibility,static,?
+control_space_parens,no,no,no,no,no,no,yes,no,no,no,no,no,no,yes,?,no,no,no,no,no,no,no
+blank_line_after_php,no,no,no,no,yes,no,no,no,no,yes,yes,no,no,yes,?,yes,yes,no,yes,no,yes,no
+class_method_control_brace,next/next/same,next/next/same,next/next/same,next/next/same,next/next/same,same/same/same,next/next/next,same/same/same,same/same/same,same/same/same,same/same/same,next/next/next,next/next/same,next/same/same,next/next/next,next/next/same,next/next/same,next/next/same,next/next/same,same/same/same,next/next/same,next/next/next
+</code></pre>
+</div>
+
+<h3 id="a2-">A.2. 调查说明</h3>
+
+<p><code class="highlighter-rouge">indent_type</code>:
+缩进类型。 <code class="highlighter-rouge">tab</code> = “使用制表符”，<code class="highlighter-rouge">2</code> or <code class="highlighter-rouge">4</code> = “空格数量”</p>
+
+<p><code class="highlighter-rouge">line_length_limit_soft</code>:
+行长度的“软”限制，用字符。 <code class="highlighter-rouge">?</code> = 不表示或者数字 <code class="highlighter-rouge">no</code> 意为不限制.</p>
+
+<p><code class="highlighter-rouge">line_length_limit_hard</code>:
+行长度的”硬”限制，用字符。 <code class="highlighter-rouge">?</code> = 不表示或者数字, <code class="highlighter-rouge">no</code> 意为不限制.</p>
+
+<p><code class="highlighter-rouge">class_names</code>:
+类名如何命名 <code class="highlighter-rouge">lower</code> = 只是小写, <code class="highlighter-rouge">lower_under</code> = 小写加下划线, <code class="highlighter-rouge">studly</code> = 骆驼型.</p>
+
+<p><code class="highlighter-rouge">class_brace_line</code>:
+类的左花括号是放在同(<code class="highlighter-rouge">same</code>)一行还是在下(<code class="highlighter-rouge">next</code>)一行？</p>
+
+<p><code class="highlighter-rouge">constant_names</code>:
+类常量如何命名？<code class="highlighter-rouge">upper</code> = 大写加下划线分隔符。</p>
+
+<p><code class="highlighter-rouge">true_false_null</code>:
+全小写或者全大写？</p>
+
+<p><code class="highlighter-rouge">method_names</code>:
+方法名如何命名？<code class="highlighter-rouge">camel</code> = <code class="highlighter-rouge">驼峰式</code>, <code class="highlighter-rouge">lower_under</code> = 小写加下划线分隔符。</p>
+
+<p><code class="highlighter-rouge">method_brace_line</code>:
+方法的左花括号在同(<code class="highlighter-rouge">same</code>)一行还是在下(<code class="highlighter-rouge">next</code>)一行？</p>
+
+<p><code class="highlighter-rouge">control_brace_line</code>:
+控制结构的左花括号在同(<code class="highlighter-rouge">same</code>)一行还是在下(<code class="highlighter-rouge">next</code>)一行？</p>
+
+<p><code class="highlighter-rouge">control_space_after</code>:
+控制结构关键词后是否有空格？</p>
+
+<p><code class="highlighter-rouge">always_use_control_braces</code>:
+控制结构总是使用花括号？</p>
+
+<p><code class="highlighter-rouge">else_elseif_line</code>:
+当使用<code class="highlighter-rouge">else</code>和<code class="highlighter-rouge">elseif</code>，是否放在同(<code class="highlighter-rouge">same</code>)一行还是在下(<code class="highlighter-rouge">next</code>)一行？</p>
+
+<p><code class="highlighter-rouge">case_break_indent_from_switch</code>:
+<code class="highlighter-rouge">case</code>和<code class="highlighter-rouge">break</code>分别从<code class="highlighter-rouge">swith</code>语句处缩进多少次？</p>
+
+<p><code class="highlighter-rouge">function_space_after</code>:
+函数调用的函数名和左括号是否有空格？</p>
+
+<p><code class="highlighter-rouge">closing_php_tag_required</code>:
+如过是纯PHP文件，关闭标签<code class="highlighter-rouge">?&gt;</code>是否需要？</p>
+
+<p><code class="highlighter-rouge">line_endings</code>:
+使用何种的行结束符？</p>
+
+<p><code class="highlighter-rouge">static_or_visibility_first</code>:
+在定义方法的时候<code class="highlighter-rouge">static</code>和可见性谁在前面？</p>
+
+<p><code class="highlighter-rouge">control_space_parens</code>:
+在控制结构表达式中，左括号后面和右括号前面是否要有一个空格？<code class="highlighter-rouge">yes</code> = <code class="highlighter-rouge">if ( $expr )</code>, <code class="highlighter-rouge">no</code> = <code class="highlighter-rouge">if ($expr)</code>.</p>
+
+<p><code class="highlighter-rouge">blank_line_after_php</code>:
+PHP的开始标签后面是否需要一个空行？</p>
+
+<p><code class="highlighter-rouge">class_method_control_brace</code>:
+左花括号在类，方法和控制结构中的位置。</p>
+
+<h3 id="a3-">A.3. 调查结果</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>indent_type:
+    tab: 7
+    2: 1
+    4: 14
+line_length_limit_soft:
+    ?: 2
+    no: 3
+    75: 4
+    80: 6
+    85: 1
+    100: 1
+    120: 4
+    150: 1
+line_length_limit_hard:
+    ?: 2
+    no: 11
+    85: 4
+    100: 3
+    120: 2
+class_names:
+    ?: 1
+    lower: 1
+    lower_under: 1
+    studly: 19
+class_brace_line:
+    next: 16
+    same: 6
+constant_names:
+    upper: 22
+true_false_null:
+    lower: 19
+    upper: 3
+method_names:
+    camel: 21
+    lower_under: 1
+method_brace_line:
+    next: 15
+    same: 7
+control_brace_line:
+    next: 4
+    same: 18
+control_space_after:
+    no: 2
+    yes: 20
+always_use_control_braces:
+    no: 3
+    yes: 19
+else_elseif_line:
+    next: 6
+    same: 16
+case_break_indent_from_switch:
+    0/1: 4
+    1/1: 4
+    1/2: 14
+function_space_after:
+    no: 22
+closing_php_tag_required:
+    no: 19
+    yes: 3
+line_endings:
+    ?: 5
+    LF: 17
+static_or_visibility_first:
+    ?: 5
+    either: 7
+    static: 4
+    visibility: 6
+control_space_parens:
+    ?: 1
+    no: 19
+    yes: 2
+blank_line_after_php:
+    ?: 1
+    no: 13
+    yes: 8
+class_method_control_brace:
+    next/next/next: 4
+    next/next/same: 11
+    next/same/same: 1
+    same/same/same: 6
+</code></pre>
+</div>

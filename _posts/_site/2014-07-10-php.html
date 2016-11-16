@@ -1,0 +1,32 @@
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function index()  
+{  
+    $sign="b872c3e6930b7fb3576c776deede6a83";  
+    $appkey="18787";  
+    $url="http://api.k780.com:88/?app=weather.future&amp;weaid=1&amp;&amp;appkey=".$appkey."&amp;sign=".$sign."&amp;format=json";//echo $url;die;  
+    $html=file_get_contents($url);  
+    echo json_encode($html);  
+  
+}  
+</code></pre>
+</div>
+
+<p>json_encode() 内置函数(PHP &gt; 5.2)可以使用得 php 中数据可以与其它语言很好的传递并且使用它。</p>
+
+<p>这个函数的功能是将数值转换成json数据存储格式。</p>
+
+<p>json_decode — 对JSON 格式的字符串进行解码。</p>
+
+<p>//身份证号的查询
+[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function ccc(){  
+    header("content-type:application/json,charset=utf-8");  
+    $url="http://api.k780.com:88/?app=idcard.get&amp;idcard=身份证号&amp;appkey=18787&amp;sign=b872c3e6930b7fb3576c776deede6a83&amp;format=xml";  
+    $aa=simplexml_load_file($url);  
+    $vv=json_encode($aa);  
+    echo $vv;  
+}  
+</code></pre>
+</div>

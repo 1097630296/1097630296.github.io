@@ -1,0 +1,53 @@
+<p>后台：<br />
+[php]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>function check(Request $request)  
+{  
+    $news = $request-&gt;input('news');  
+    $begin=$request-&gt;input('begin');  
+    $end = $request-&gt;input('end');  
+    $where = "1";  
+    if(!empty($news)){  
+        $where.=" and news like '%$news%'";  
+    }  
+    if(!empty($begin)){  
+        $where.=" and time &gt; '$begin'";  
+    }  
+    if(!empty($end)){  
+        $where.=" and time &lt; '$end'";  
+    }  
+    //echo $where;  
+    $count = count(Db::select("select * from news  where $where"));  
+  
+    $n=3;  
+    $pages=ceil($count/$n);  
+  
+    //echo $pages;die;  
+  
+    $page=isset($_GET['page'])?$_GET['page']:1;  
+  
+    $up=$page&lt;=1?$page:$page-1;  
+  
+    $down=$page&gt;=$pages?$pages:$page+1;  
+  
+    $state=($page-1)*$n;  
+  
+    $arr=Db::select("select * from news where $where limit $state,$n");  
+    //print_r($arr);die;  
+  
+    $arr['arr']=$arr;  
+    $arr['up']=$up;  
+    $arr['down']=$down;  
+    $arr['pages']=$pages;  
+    $arr['page']=$page;  
+    $arr['begin']=$begin;  
+  
+  
+  
+    return view('index',[  
+        'arr'=&gt;$arr  
+    ]);  
+}   前台： &lt;a href="javascript:void(0)" onclick="display(1)"&gt;首页&lt;/a&gt; &lt;a href="javascript:void(0)" onclick="display()"&gt;上一页&lt;/a&gt; &lt;a href="javascript:void(0)" onclick="display()"&gt;下一页&lt;/a&gt; &lt;a href="javascript:void(0)" onclick="display()"&gt;末页&lt;/a&gt; ```php &lt;script&gt; function display(page) { var news=document.getElementById('news').value; var begin=document.getElementById('begin').value; var end=document.getElementById('end').value; var xhr = new XMLHttpRequest(); xhr.open('get','check?page='+page+"&amp;news="+news+"&amp;begin="+begin+"&amp;end="+end) xhr.send(null); xhr.onreadystatechange=function() { if(xhr.readyState==4 &amp;&amp; xhr.status==200) { document.getElementById('div1').innerHTML=xhr.responseText; } } }&lt;/script&gt; ```
+</code></pre>
+</div>
+

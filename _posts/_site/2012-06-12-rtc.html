@@ -1,0 +1,198 @@
+<p>在学习WebRTC，找了些资料，记录一下，供以后查询。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>有些需要翻墙才能看
+</code></pre>
+</div>
+
+<p>WebRTC 介绍</p>
+
+<p>官网在这里：https://webrtc.org/。然后这里有一个官方的Getting Started：https://webrtc.org/start/。</p>
+
+<p>Google关于WebRTC的幻灯片：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>http://io13webrtc.appspot.com/
+</code></pre>
+</div>
+
+<p>然后是WebRTC的SPEC：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://www.w3.org/TR/webrtc/
+</code></pre>
+</div>
+
+<p>WebRTC项目源码地址：https://chromium.googlesource.com/external/webrtc。</p>
+
+<p>Native开发文档：https://webrtc.org/native-code/development/。
+教程</p>
+
+<p>入门的，首选codelabs的Real time communication with WebRTC：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://codelabs.developers.google.com/codelabs/webrtc-web
+</code></pre>
+</div>
+
+<p>然后是html5rocks上的基础教程：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://www.html5rocks.com/en/tutorials/webrtc/basics/
+</code></pre>
+</div>
+
+<p>开发文档、入门教程，参考这里：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://developer.mozilla.org/en-US/docs/Web/Guide/API/WebRTC/Peer-to-peer_communications_with_WebRTC
+</code></pre>
+</div>
+
+<p>这里，http://piratefsh.github.io/projects/2015/08/27/webrtc-stun-turn-servers.html，是一个人部署stun和turn server的记录。</p>
+
+<p>进阶一点的，看这个，比较完整的介绍和实践：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>http://blog.mgechev.com/2014/12/26/multi-user-video-conference-webrtc-angularjs-yeoman/
+</code></pre>
+</div>
+
+<p>还有这个，介绍如何用WebRTC一步一步实现视频会议：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://www.cleveroad.com/blog/webrtc-step-by-step-implementation-of-video-conference
+</code></pre>
+</div>
+
+<p>还找到一个中文版的教程，通过WebRTC实现实时视频通信：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>通过WebRTC实现实时视频通信（一）
+通过WebRTC实现实时视频通信（二）
+通过WebRTC实现实时视频通信（三）
+</code></pre>
+</div>
+
+<p>STUN/TURN/Signaling解决方案</p>
+
+<p>WebRTC需要Signaling、STUN、TURN等Server，Google有自己的，还有很多开源的，也有收费的。</p>
+
+<p>免费的：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Signaling Server需要自己实现，如果你用Nodejs和Socket.io的话，比较容易做。https://codelabs.developers.google.com/codelabs/webrtc-web这里就有一个示例。
+Google的STUN服务器：stun:stun.l.google.com:19302
+restund：http://www.creytiv.com/restund.html。
+rfc5766-turn-server: https://code.google.com/p/rfc5766-turn-server。挪到这里了：https://github.com/coturn/rfc5766-turn-server/，支持STUN和TURN
+http://www.pjsip.org/, PJSIP，支持STUN、TURN、ICE。
+https://nice.freedesktop.org/wiki/，libnice，支持ICE和STUN。
+http://www.stunprotocol.org/，STUNTMAN，对应的代码，https://github.com/jselbie/stunserver
+https://sourceforge.net/projects/stun/，STUN client and server
+https://github.com/coturn/coturn，C++实现的STUN和TURN服务器，这里有一个安装指南：https://www.webrtc-experiment.com/docs/TURN-server-installation-guide.html
+</code></pre>
+</div>
+
+<p>这里有一个WebRTC服务器搭建的文档：http://io.diveinedu.com/2015/02/05/%E7%AC%AC%E5%85%AD%E7%AB%A0-WebRTC%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA.html。</p>
+
+<p>收费的解决方案：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://www.onsip.com/blog/webrtc-server
+</code></pre>
+</div>
+
+<p>开源示例</p>
+
+<p>还有一些开源的示例代码，这个比较全了：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://github.com/webrtc/samples
+</code></pre>
+</div>
+
+<p>对应的demo在这里（Chrome打开可以看效果）：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://webrtc.github.io/samples
+</code></pre>
+</div>
+
+<p>回退一级，还有更多资源：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://github.com/webrtc
+</code></pre>
+</div>
+
+<p>还有一个，SimpleWebRTC：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://github.com/andyet/SimpleWebRTC
+</code></pre>
+</div>
+
+<p>还有：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://github.com/mgechev/angular-webrtc
+</code></pre>
+</div>
+
+<p>嗯，接下来这个更赞，支持多人视频会议，开源的：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://github.com/jitsi，对应的演示地址https://meet.jit.si/
+</code></pre>
+</div>
+
+<p>世界上第一个基于HTML5的SIP客户端：https://www.doubango.org/sipml5/。他们的GitHub主页：https://github.com/DoubangoTelecom/doubango。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>2016.11.10补充
+</code></pre>
+</div>
+
+<p>又找到一个国内的小示例，WebRTC实现网页版多人视频聊天室：http://www.cnblogs.com/FuzhePan/p/3899551.html。看样子是多人聊天室，一对一视频的实现。</p>
+
+<p>还有一个WebRTC native demo：http://sourcey.com/webrtc-native-to-browser-video-streaming-example/，能够在C++的客户端和浏览器之间视频通信。
+在线演示</p>
+
+<p>搜集了一些在线演示的示例：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://apprtc.appspot.com
+http://www.simpl.info/getusermedia
+https://webrtc.github.io/samples
+http://webcamtoy.com/app/
+http://www.shinydemos.com/facekat/
+http://idevelop.ro/ascii-camera/
+https://meet.jit.si/，多人的视频会议
+</code></pre>
+</div>
+
+<p>围绕WebRTC的框架和服务</p>
+
+<p>框架，视频通信的：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://github.com/webrtc/adapter，封装了浏览器差异
+https://github.com/henrikjoreteg/SimpleWebRTC，前面说过这个链接了
+https://github.com/priologic/easyrtc
+https://github.com/webRTC/webRTC.io
+</code></pre>
+</div>
+
+<p>Peer间传递数据的：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>http://peerjs.com/
+https://github.com/peer5/sharefest
+</code></pre>
+</div>
+
+<p>服务：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>http://www.tokbox.com/
+http://www.vline.com/
+</code></pre>
+</div>
+
+<p>RTCMultiConnection，JS封装库和Signaling服务：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://github.com/muaz-khan/RTCMultiConnection
+</code></pre>
+</div>
+
+<p>图书</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>《Real-Time Communication with WebRTC》，https://bloggeek.me/book-webrtc-salvatore-simon/
+https://bloggeek.me/best-webrtc-book/，这里介绍了5本书。
+</code></pre>
+</div>
+
+<p>课程</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>https://bloggeek.me/course/webrtc-architecture/
+</code></pre>
+</div>
+

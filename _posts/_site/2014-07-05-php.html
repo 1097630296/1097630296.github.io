@@ -1,0 +1,50 @@
+<p>第一步：在根目录下（index.PHP）同一级目录下建立一个.htaccess这个文件文件内容（即红色标识所显示的内容）</p>
+
+<p>URI 类 和 URL 辅助函数 包含了一些函数可以让你更容易的处理 URI 数据，另外，你的 URL 可以通过 URI 路由 进行重定向从而得到更大的灵活性。
+移除 URL 中的 index.php</p>
+
+<p>默认情况，你的 URL 中会包含 index.php 文件:</p>
+
+<p>example.com/index.php/news/article/my_article</p>
+
+<p>如果你的 Apache 服务器启用了 mod_rewrite ，你可以简单的通过一个 .htaccess 文件再加上一些简单的规则就可以移除 index.php 了。下面是这个文件的一个例子， 其中使用了 “否定条件” 来排除某些不需要重定向的项目：</p>
+
+<p>RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]</p>
+
+<p>第二步：</p>
+
+<p>在config/config.php/中修改URL后缀（即绿色所代表的内容）</p>
+
+<p>添加 URL 后缀（$config[‘url_suffix’] = ‘.html’;）</p>
+
+<p>在你的 config/config.php 文件中你可以指定一个后缀，CodeIgniter 生成 URL 时会自动添加上它。例如，一个像这样的 URL:</p>
+
+<p>example.com/index.php/products/view/shoes</p>
+
+<p>你可以添加一个后缀，如：.html ，这样页面看起来就是这个样子:</p>
+
+<p>example.com/index.php/products/view/shoes.html</p>
+
+<p>第三步：</p>
+
+<p>在config/routes.php中修改配置且添加正则匹配</p>
+
+<p>$route[‘default_controller’] = ‘welcome’;
+$route[‘404<em>override’] = ‘’;
+$route[‘translate_uri_dashes’] = FALSE;
+$route[‘welcome/lists</em>(:num)_(:num)’] = ‘welcome/lists/$1/$2’;</p>
+
+<p>具体案例：</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function lists($page,$search){  
+        echo $page;  
+        echo "&lt;/br&gt;";  
+        echo $search;  
+    }  
+</code></pre>
+</div>

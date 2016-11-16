@@ -1,0 +1,67 @@
+<blockquote>
+  <p><strong>已弃用</strong> - 截止到2014年10月21日，PSR-0已被弃用。 推荐替代使用<a href="http://www.php-fig.org/psr/psr-4/">PSR-4</a>。</p>
+</blockquote>
+
+<p>下文描述了若要使用一个通用的<code class="highlighter-rouge">自动加载器(autoloader)</code>，你所需要遵守的规范：</p>
+
+<h2 id="section">规范</h2>
+
+<ul>
+  <li>一个完全标准的<code class="highlighter-rouge">命名空间(namespace)</code>和<code class="highlighter-rouge">类(class)</code>的结构是这样的：<code class="highlighter-rouge">\&lt;Vendor Name&gt;\(&lt;Namespace&gt;\)*&lt;Class Name&gt;</code></li>
+  <li>每个<code class="highlighter-rouge">命名空间(namespace)</code>都必须有一个顶级的<code class="highlighter-rouge">空间名(namespace)</code>(“<code class="highlighter-rouge">组织名(Vendor Name)</code>”)。</li>
+  <li>每个<code class="highlighter-rouge">命名空间(namespace)</code>中可以根据需要使用任意数量的<code class="highlighter-rouge">子命名空间(sub-namespace)</code>。</li>
+  <li>从文件系统中加载源文件时，<code class="highlighter-rouge">空间名(namespace)</code>中的分隔符将被转换为 <code class="highlighter-rouge">DIRECTORY_SEPARATOR</code>。</li>
+  <li><code class="highlighter-rouge">类名(class name)</code>中的每个下划线<code class="highlighter-rouge">_</code>都将被转换为一个<code class="highlighter-rouge">DIRECTORY_SEPARATOR</code>。下划线<code class="highlighter-rouge">_</code>在<code class="highlighter-rouge">空间名(namespace)</code>中没有什么特殊的意义。</li>
+  <li>完全标准的<code class="highlighter-rouge">命名空间(namespace)</code>和<code class="highlighter-rouge">类(class)</code>从文件系统加载源文件时将会加上<code class="highlighter-rouge">.php</code>后缀。</li>
+  <li><code class="highlighter-rouge">组织名(vendor name)</code>，<code class="highlighter-rouge">空间名(namespace)</code>，<code class="highlighter-rouge">类名(class name)</code>都由大小写字母组合而成。</li>
+</ul>
+
+<h2 id="section-1">示例</h2>
+
+<ul>
+  <li><code class="highlighter-rouge">\Doctrine\Common\IsolatedClassLoader</code> =&gt; <code class="highlighter-rouge">/path/to/project/lib/vendor/Doctrine/Common/IsolatedClassLoader.php</code></li>
+  <li><code class="highlighter-rouge">\Symfony\Core\Request</code> =&gt; <code class="highlighter-rouge">/path/to/project/lib/vendor/Symfony/Core/Request.php</code></li>
+  <li><code class="highlighter-rouge">\Zend\Acl</code> =&gt; <code class="highlighter-rouge">/path/to/project/lib/vendor/Zend/Acl.php</code></li>
+  <li><code class="highlighter-rouge">\Zend\Mail\Message</code> =&gt; <code class="highlighter-rouge">/path/to/project/lib/vendor/Zend/Mail/Message.php</code></li>
+</ul>
+
+<h2 id="namespaceclass-name"><code class="highlighter-rouge">空间名(namespace)</code>和<code class="highlighter-rouge">类名(class name)</code>中的下划线</h2>
+
+<ul>
+  <li><code class="highlighter-rouge">\namespace\package\Class_Name</code> =&gt; <code class="highlighter-rouge">/path/to/project/lib/vendor/namespace/package/Class/Name.php</code></li>
+  <li><code class="highlighter-rouge">\namespace\package_name\Class_Name</code> =&gt; <code class="highlighter-rouge">/path/to/project/lib/vendor/namespace/package_name/Class/Name.php</code></li>
+</ul>
+
+<p>以上是我们为实现通用的自动加载而制定的最低标准。你可以利用能够自动加载<code class="highlighter-rouge">PHP 5.3</code>类的<code class="highlighter-rouge">SplClassLoader</code>来测试你的代码是否符合这些标准。</p>
+
+<h2 id="section-2">实例</h2>
+
+<p>下面是一个怎样利用上述标准来实现自动加载的示例函数。</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">function</span> <span class="nf">autoload</span><span class="p">(</span><span class="nv">$className</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$className</span> <span class="o">=</span> <span class="nb">ltrim</span><span class="p">(</span><span class="nv">$className</span><span class="p">,</span> <span class="s1">'\\'</span><span class="p">);</span>
+    <span class="nv">$fileName</span>  <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+    <span class="nv">$namespace</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$lastNsPos</span> <span class="o">=</span> <span class="nb">strrpos</span><span class="p">(</span><span class="nv">$className</span><span class="p">,</span> <span class="s1">'\\'</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nv">$namespace</span> <span class="o">=</span> <span class="nb">substr</span><span class="p">(</span><span class="nv">$className</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">$lastNsPos</span><span class="p">);</span>
+        <span class="nv">$className</span> <span class="o">=</span> <span class="nb">substr</span><span class="p">(</span><span class="nv">$className</span><span class="p">,</span> <span class="nv">$lastNsPos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="nv">$fileName</span>  <span class="o">=</span> <span class="nb">str_replace</span><span class="p">(</span><span class="s1">'\\'</span><span class="p">,</span> <span class="nx">DIRECTORY_SEPARATOR</span><span class="p">,</span> <span class="nv">$namespace</span><span class="p">)</span> <span class="o">.</span> <span class="nx">DIRECTORY_SEPARATOR</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nv">$fileName</span> <span class="o">.=</span> <span class="nb">str_replace</span><span class="p">(</span><span class="s1">'_'</span><span class="p">,</span> <span class="nx">DIRECTORY_SEPARATOR</span><span class="p">,</span> <span class="nv">$className</span><span class="p">)</span> <span class="o">.</span> <span class="s1">'.php'</span><span class="p">;</span>
+
+    <span class="k">require</span> <span class="nv">$fileName</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h2 id="splclassloader"><code class="highlighter-rouge">SplClassLoader</code>实现</h2>
+
+<p>下面的gist是一个按照上面建议的标准来自动加载类的<code class="highlighter-rouge">SplClassLoader</code>实例。这是依据这些标准来加载<code class="highlighter-rouge">PHP 5.3</code>类的推荐方案。</p>
+
+<ul>
+  <li><a href="http://gist.github.com/221634">http://gist.github.com/221634</a></li>
+</ul>
+

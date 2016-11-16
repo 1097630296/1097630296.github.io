@@ -1,0 +1,121 @@
+<p>1.安装好Linux，安装好Git（192.168.1.239）</p>
+
+<p>2.创建一个用户zph（让此用户提供git on server），密码设置为12345678</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># useradd zph  
+</code></pre>
+</div>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># passwd zph  
+</code></pre>
+</div>
+
+<p>3.切换到zph用户</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># su zph  
+</code></pre>
+</div>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ cd  
+</code></pre>
+</div>
+
+<p>4.创建一个远程仓库</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ git init --bare sample.git  
+</code></pre>
+</div>
+
+<p>5.在windows下（192.168.1.5），打开git bash</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ git clone zph@192.168.1.239:/home/zph/sample.git  
+</code></pre>
+</div>
+
+<p>终端会让输入密码，此时输入zph用户的密码即（12345678）</p>
+
+<p>6.为了让用户，不用每次都输入密码，在linux生成.ssh目录</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ ssh-keygen -t rsa -C "youremail@example.com"  
+</code></pre>
+</div>
+
+<p>7.进入.ssh,新建一个authorized_keys文件</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ cd /home/zph/.ssh/  
+</code></pre>
+</div>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ vi authorized_keys  
+</code></pre>
+</div>
+
+<p>8.打开windows中当前用户的.ssh/id_rsa.pub,复制里面的内容，粘贴到第7步中的authorized_keys中</p>
+
+<p>9.更改authorized_keys文件的权限</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$chmod 600 authorized_keys  
+</code></pre>
+</div>
+
+<p>10.验证authorized_keys有没有生效，打开windows</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ ssh zph@192.168.1.239  
+</code></pre>
+</div>
+
+<p>如果不需要输入密码，代表生效了</p>
+
+<p>11.重复第5步，已经不需要输入密码了</p>
+
+<p>12.代码自动更新</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>cp /home/zph/sample.git/hooks/post-update.sample /home/zph/sample.git/hooks/post-update
+</code></pre>
+</div>
+<p>13.打开post-update，先清空内容，然后进行编辑如下</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>#!/bin/bash
+
+#如果想要发送邮件则开启下面两行，关于发送邮件请访问 http://blog.csdn.NET/zph1234/article/details/50509885
+
+#var=`git show`
+#PHP /var/www/html/mail.php "$var"
+
+cd /usr/share/nginx/html/sample
+unset GIT_DIR
+
+git checkout master
+git pull
+</code></pre>
+</div>
+<p>14.出于安全考虑,只让克隆提交版本库，不让登陆终端</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>$ which git-shell
+/usr/bin/git-shell
+
+vi /etc/passwd
+
+ph:x:1000:1000:zhangpenghui:/home/zph:/usr/bin/git-shell
+
+</code></pre>
+</div>

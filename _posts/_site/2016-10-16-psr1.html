@@ -1,0 +1,165 @@
+<h1 id="section">基本代码规范</h1>
+
+<p>本节我们将会讨论一些基本的代码规范问题，以此作为将来讨论更高级别的代码分享和技术互用的基础。</p>
+
+<p><a href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119</a>中的<code class="highlighter-rouge">必须(MUST)</code>，<code class="highlighter-rouge">不可(MUST NOT)</code>，<code class="highlighter-rouge">建议(SHOULD)</code>，<code class="highlighter-rouge">不建议(SHOULD NOT)</code>，<code class="highlighter-rouge">可以/可能(MAY)</code>等关键词将在本节用来做一些解释性的描述。</p>
+
+<ol>
+  <li>
+    <h2 id="section-1">概述</h2>
+  </li>
+</ol>
+
+<ul>
+  <li>
+    <p>源文件<code class="highlighter-rouge">必须</code>只使用 <code class="highlighter-rouge">&lt;?php</code> 和 <code class="highlighter-rouge">&lt;?=</code> 这两种标签。</p>
+  </li>
+  <li>
+    <p>源文件中php代码的编码格式<code class="highlighter-rouge">必须</code>只使用不带<code class="highlighter-rouge">字节顺序标记(BOM)</code>的<code class="highlighter-rouge">UTF-8</code>。</p>
+  </li>
+  <li>
+    <p>一个源文件<code class="highlighter-rouge">建议</code>只用来做声明（<code class="highlighter-rouge">类(class)</code>，<code class="highlighter-rouge">函数(function)</code>，<code class="highlighter-rouge">常量(constant)</code>等）或者只用来做一些引起副作用的操作（例如：输出信息，修改<code class="highlighter-rouge">.ini</code>配置等）,但<code class="highlighter-rouge">不建议</code>同时做这两件事。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">命名空间(namespace)</code>和<code class="highlighter-rouge">类(class)</code> <code class="highlighter-rouge">必须</code>遵守<a href="https://github.com/hfcorriez/fig-standards/blob/zh_CN/接受/PSR-0.md">PSR-0</a>标准。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">类名(class name)</code> <code class="highlighter-rouge">必须</code>使用<code class="highlighter-rouge">骆驼式(StudlyCaps)</code>写法 (译者注：<code class="highlighter-rouge">驼峰式(cameCase)</code>的一种变种，后文将直接用<code class="highlighter-rouge">StudlyCaps</code>表示)。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">类(class)</code>中的常量<code class="highlighter-rouge">必须</code>只由大写字母和<code class="highlighter-rouge">下划线(_)</code>组成。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">方法名(method name)</code> <code class="highlighter-rouge">必须</code>使用<code class="highlighter-rouge">驼峰式(cameCase)</code>写法(译者注：后文将直接用<code class="highlighter-rouge">camelCase</code>表示)。</p>
+  </li>
+</ul>
+
+<ol>
+  <li>
+    <h2 id="section-2">文件</h2>
+  </li>
+</ol>
+
+<h3 id="php">2.1. PHP标签</h3>
+
+<p>PHP代码<code class="highlighter-rouge">必须</code>只使用<code class="highlighter-rouge">长标签(&lt;?php ?&gt;)</code>或者<code class="highlighter-rouge">短输出式标签(&lt;?= ?&gt;)</code>；而<code class="highlighter-rouge">不可</code>使用其他标签。</p>
+
+<h3 id="section-3">2.2. 字符编码</h3>
+
+<p>PHP代码的编码格式<code class="highlighter-rouge">必须</code>只使用不带<code class="highlighter-rouge">字节顺序标记(BOM)</code>的<code class="highlighter-rouge">UTF-8</code>。</p>
+
+<h3 id="section-4">2.3. 副作用</h3>
+
+<p>一个源文件<code class="highlighter-rouge">建议</code>只用来做声明（<code class="highlighter-rouge">类(class)</code>，<code class="highlighter-rouge">函数(function)</code>，<code class="highlighter-rouge">常量(constant)</code>等）或者只用来做一些引起副作用的操作（例如：输出信息，修改<code class="highlighter-rouge">.ini</code>配置等）,但<code class="highlighter-rouge">不建议</code>同时做这两件事。</p>
+
+<p>短语<code class="highlighter-rouge">副作用(side effects)</code>的意思是 <em>在包含文件时</em> 所执行的逻辑与所声明的<code class="highlighter-rouge">类(class)</code>，<code class="highlighter-rouge">函数(function)</code>，<code class="highlighter-rouge">常量(constant)</code>等没有直接的关系。</p>
+
+<p><code class="highlighter-rouge">副作用(side effects)</code>包含但不局限于：产生输出，显式地使用<code class="highlighter-rouge">require</code>或<code class="highlighter-rouge">include</code>，连接外部服务，修改ini配置，触发错误或异常，修改全局或者静态变量，读取或修改文件等等</p>
+
+<p>下面是一个既包含声明又有副作用的示例文件；即应避免的例子：</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="c1">// 副作用：修改了ini配置
+</span><span class="nb">ini_set</span><span class="p">(</span><span class="s1">'error_reporting'</span><span class="p">,</span> <span class="k">E_ALL</span><span class="p">);</span>
+
+<span class="c1">// 副作用：载入了文件
+</span><span class="k">include</span> <span class="s2">"file.php"</span><span class="p">;</span>
+
+<span class="c1">// 副作用：产生了输出
+</span><span class="k">echo</span> <span class="s2">"&lt;html&gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+
+<span class="c1">// 声明
+</span><span class="k">function</span> <span class="nf">foo</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 函数体
+</span><span class="p">}</span>
+</code></pre>
+</div>
+
+<p>下面是一个仅包含声明的示例文件；即应提倡的例子：</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="c1">// 声明
+</span><span class="k">function</span> <span class="nf">foo</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 函数体
+</span><span class="p">}</span>
+
+<span class="c1">// 条件式声明不算做是副作用
+</span><span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="nb">function_exists</span><span class="p">(</span><span class="s1">'bar'</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">function</span> <span class="nf">bar</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// 函数体
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<ol>
+  <li>
+    <h2 id="namespaceclass-name"><code class="highlighter-rouge">空间名(namespace)</code>和<code class="highlighter-rouge">类名(class name)</code></h2>
+  </li>
+</ol>
+
+<p><code class="highlighter-rouge">命名空间(namespace)</code>和<code class="highlighter-rouge">类(class)</code>必须遵守 <a href="https://github.com/hfcorriez/fig-standards/blob/zh_CN/接受/PSR-0.md">PSR-0</a>.</p>
+
+<p>这意味着一个源文件中只能有一个<code class="highlighter-rouge">类(class)</code>，并且每个<code class="highlighter-rouge">类(class)</code>至少要有一级<code class="highlighter-rouge">空间名（namespace）</code>：即一个顶级的<code class="highlighter-rouge">组织名(vendor name)</code>。</p>
+
+<p><code class="highlighter-rouge">类名(class name)</code> <code class="highlighter-rouge">必须</code>使用<code class="highlighter-rouge">StudlyCaps</code>写法。</p>
+
+<p><code class="highlighter-rouge">PHP5.3</code>之后的代码<code class="highlighter-rouge">必须</code>使用正式的<code class="highlighter-rouge">命名空间(namespace)</code>
+例子：</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="c1">// PHP 5.3 及之后:
+</span><span class="k">namespace</span> <span class="nx">Vendor\Model</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Foo</span>
+<span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">PHP5.2.x</code>之前的代码<code class="highlighter-rouge">建议</code>用伪命名空间<code class="highlighter-rouge">Vendor_</code>作为<code class="highlighter-rouge">类名(class name)</code>的前缀</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="c1">// PHP 5.2.x 及之前:
+</span><span class="k">class</span> <span class="nc">Vendor_Model_Foo</span>
+<span class="p">{</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<ol>
+  <li>
+    <h2 id="section-5">类的常量、属性和方法</h2>
+  </li>
+</ol>
+
+<p>术语<code class="highlighter-rouge">类(class)</code>指所有的<code class="highlighter-rouge">类(class)</code>，<code class="highlighter-rouge">接口(interface)</code>和<code class="highlighter-rouge">特性(trait)</code></p>
+
+<h3 id="section-6">4.1. 常量</h3>
+
+<p>类常量<code class="highlighter-rouge">必须</code>只由大写字母和<code class="highlighter-rouge">下划线(_)</code>组成。
+例子：</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="k">namespace</span> <span class="nx">Vendor\Model</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Foo</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="no">VERSION</span> <span class="o">=</span> <span class="s1">'1.0'</span><span class="p">;</span>
+    <span class="k">const</span> <span class="no">DATE_APPROVED</span> <span class="o">=</span> <span class="s1">'2012-06-01'</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="section-7">4.2. 属性</h3>
+
+<p>本指南中故意不对<code class="highlighter-rouge">$StulyCaps</code>，<code class="highlighter-rouge">$camelCase</code>或者<code class="highlighter-rouge">$unser_score</code>中的某一种风格作特别推荐，完全由读者依据个人喜好决定属性名的命名风格。</p>
+
+<p>但是不管你如何定义属性名，<code class="highlighter-rouge">建议</code>在一个合理的范围内保持一致。这个范围可能是<code class="highlighter-rouge">组织(vendor)</code>级别的，<code class="highlighter-rouge">包(package)</code>级别的，<code class="highlighter-rouge">类(class)</code>级别的，或者<code class="highlighter-rouge">方法(method)</code>级别的。</p>
+
+<h3 id="section-8">4.3. 方法</h3>
+
+<p>方法名则<code class="highlighter-rouge">必须</code>使用<code class="highlighter-rouge">camelCase()</code>风格来声明。</p>

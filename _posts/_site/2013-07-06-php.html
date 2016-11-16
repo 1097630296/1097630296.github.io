@@ -1,0 +1,85 @@
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>    <span class="cp">&lt;?php</span>  
+            <span class="nb">header</span><span class="p">(</span><span class="s2">"content-type:text/html;charset=utf-8"</span><span class="p">);</span><span class="o">&lt;</span><span class="nx">pre</span> <span class="nx">name</span><span class="o">=</span><span class="s2">"code"</span> <span class="k">class</span><span class="err">="</span><span class="nc">python</span><span class="s2">"&gt;   public function lists(){  
+            </span><span class="nv">$search</span><span class="s2">=</span><span class="nv">$_GET['search']</span><span class="s2">;//搜索的值  
+            </span><span class="nv">$mem</span><span class="s2">=new Memcache;//连接memcache  
+            </span><span class="nv">$mem-&gt;connect</span><span class="s2">("</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="s2">",11211);  
+            </span><span class="nv">$pd</span><span class="s2">=</span><span class="nv">$mem-&gt;get</span><span class="s2">("</span><span class="nv">$search</span><span class="s2">");//获得到搜索到的值  
+            if(</span><span class="nv">$pd</span><span class="s2">){  
+                if(</span><span class="nv">$pd</span><span class="s2">&lt;=9){  
+                    </span><span class="nv">$pd</span><span class="s2">++;  
+                    </span><span class="nv">$mem-&gt;replace</span><span class="s2">("</span><span class="nv">$search</span><span class="s2">",</span><span class="nv">$pd</span><span class="s2">,0,600);  
+                    </span><span class="nv">$arr</span><span class="s2">=</span><span class="nv">$this-&gt;db</span><span class="s2">-&gt;like("</span><span class="nx">content</span><span class="s2">",</span><span class="nv">$search</span><span class="s2">)-&gt;get("</span><span class="nx">zk1</span><span class="s2">")-&gt;result_array();  
+                    echo json_encode(</span><span class="nv">$arr</span><span class="s2">);  
+                }else if(</span><span class="nv">$pd</span><span class="s2">==10){  
+                    </span><span class="nv">$arr</span><span class="s2">=</span><span class="nv">$this-&gt;db</span><span class="s2">-&gt;like("</span><span class="nx">content</span><span class="s2">",</span><span class="nv">$search</span><span class="s2">)-&gt;get("</span><span class="nx">zk1</span><span class="s2">")-&gt;result_array();  
+                    </span><span class="nv">$mem-&gt;replace</span><span class="s2">("</span><span class="nv">$search</span><span class="s2">",</span><span class="nv">$arr</span><span class="s2">,0,600);  
+                    echo json_encode(</span><span class="nv">$arr</span><span class="s2">);  
+                }else{  
+                    echo json_encode(</span><span class="nv">$pd</span><span class="s2">);  
+                }  
+            }else{  
+                    </span><span class="nv">$mem-&gt;set</span><span class="s2">("</span><span class="nv">$search</span><span class="s2">",0,0,600);  
+                    </span><span class="nv">$arr</span><span class="s2">=</span><span class="nv">$this-&gt;db</span><span class="s2">-&gt;like("</span><span class="nx">content</span><span class="s2">",</span><span class="nv">$search</span><span class="s2">)-&gt;get("</span><span class="nx">zk1</span><span class="s2">")-&gt;result_array();  
+                    echo json_encode(</span><span class="nv">$arr</span><span class="s2">);  
+            }  
+        }  
+
+</span></code></pre>
+</div>
+<p>2.搜索数据，前十次从数据库中搜索数据，后十次从memcache中搜索数据</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function lists(){  
+    $search=$_GET['search'];//搜索的值  
+    $mem=new Memcache;//连接memcache  
+    $mem-&gt;connect("127.0.0.1",11211);  
+    $pd=$mem-&gt;get("$search");//获得到搜索到的值  
+    if($pd){  
+        if($pd&lt;=9){  
+            $pd++;  
+            $mem-&gt;replace("$search",$pd,0,600);  
+            $arr=$this-&gt;db-&gt;like("content",$search)-&gt;get("zk1")-&gt;result_array();  
+            echo json_encode($arr);  
+        }else if($pd==10){  
+            $arr=$this-&gt;db-&gt;like("content",$search)-&gt;get("zk1")-&gt;result_array();  
+            $mem-&gt;replace("$search",$arr,0,600);  
+            echo json_encode($arr);  
+        }else{  
+            echo json_encode($pd);  
+        }  
+    }else{  
+            $mem-&gt;set("$search",0,0,600);  
+            $arr=$this-&gt;db-&gt;like("content",$search)-&gt;get("zk1")-&gt;result_array();  
+            echo json_encode($arr);  
+    }  
+}  
+</code></pre>
+</div>
+
+<p>3.获取数据</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;script&gt;  
+    $(function(){  
+        $(document).on("click",".search1",function(){  
+            var search=$("#search").val();  
+            $.getJSON("&lt;?php echo site_url('welcome/lists') ?&gt;",{search:search},function(obj){  
+                var html = '&lt;table border="1"&gt;';  
+                    html+='&lt;th&gt;编号&lt;/th&gt;&lt;th&gt;用户名&lt;/th&gt;';  
+                    for(var i = 0;i&lt;obj.length;i++){  
+                        html+='&lt;tr&gt;';  
+                        html+='&lt;td&gt;'+obj[i]['id']+'&lt;/td&gt;';  
+                        html+='&lt;td&gt;'+obj[i]['content']+'&lt;/td&gt;';  
+                        html+='&lt;tr&gt;';  
+                    }  
+                    html+='&lt;/table&gt;';  
+                    $("#list").html(html);  
+  
+            })  
+        })        
+    })  
+&lt;/script&gt;  
+</code></pre>
+</div>

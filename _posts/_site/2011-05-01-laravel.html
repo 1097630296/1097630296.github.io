@@ -1,0 +1,20 @@
+<p>[php]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>use mail;  
+  
+if ($request-&gt;isMethod('post'))  
+{  
+    $input=$request-&gt;all();  
+    //print_r($input);die;   
+    //unset($input['_token']);  
+     $email =$request-&gt;input('email');  
+     $name =$request-&gt;input('name');  
+     $check =$request-&gt;input('check');  
+    foreach($email as $value) {  
+    $res= Mail::send('emails.test',['check'=&gt;$check],function($m)use($value,$name) { $m-&gt;to($value)-&gt;subject($name); }); if(!$res) { die("失败了！"); } else{$re = DB::table('email')-&gt;insert( ['name'=&gt;$name,'check'=&gt;$check,'email'=&gt;$value,'time'=&gt;date('Y-m-d h:i:s')] );if(!$re){die("入库失败");  
+     }  
+   }   
+   }  
+    returnredirect('lists');}  
+</code></pre>
+</div>

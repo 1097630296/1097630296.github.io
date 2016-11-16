@@ -1,0 +1,52 @@
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>    <span class="cp">&lt;?php</span>  
+    <span class="nb">ini_set</span><span class="p">(</span><span class="s2">"session.save_handler"</span><span class="p">,</span><span class="s2">"user"</span><span class="p">);</span>    
+    <span class="c1">//session.gc_probability = 1 分子    
+</span>    <span class="nb">ini_set</span><span class="p">(</span><span class="s2">"session.gc_probability"</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>    
+    <span class="c1">//session.gc_divisor = 1000 分母    
+</span>    <span class="nb">ini_set</span><span class="p">(</span><span class="s2">"session.gc_divisor"</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>    
+    <span class="c1">//session.gc_maxlifetime = 1440 垃圾回收时间，session有效期    
+</span>    <span class="nb">session_set_save_handler</span><span class="p">(</span> <span class="s2">"open"</span><span class="p">,</span><span class="s2">"close"</span><span class="p">,</span><span class="s2">"read"</span><span class="p">,</span><span class="s2">"write"</span><span class="p">,</span><span class="s2">"destroy"</span><span class="p">,</span><span class="s2">"gc"</span> <span class="p">);</span>  
+    <span class="c1">//连接数据库    
+</span>    <span class="k">function</span> <span class="nf">open</span><span class="p">(){</span>    
+        <span class="o">@</span><span class="nv">$link</span> <span class="o">=</span> <span class="nb">mysql_connect</span><span class="p">(</span><span class="s1">'127.0.0.1'</span><span class="p">,</span> <span class="s1">'root'</span><span class="p">,</span> <span class="s1">'root'</span><span class="p">);</span>    
+        <span class="nb">mysql_query</span><span class="p">(</span><span class="s1">'set names utf8'</span><span class="p">);</span>    
+        <span class="nb">mysql_query</span><span class="p">(</span><span class="s1">'use wangbin'</span><span class="p">);</span>    
+    <span class="p">}</span>    
+    <span class="k">function</span> <span class="nf">close</span><span class="p">(){</span>    
+        <span class="nb">mysql_close</span><span class="p">();</span>    
+    <span class="p">}</span>    
+    <span class="k">function</span> <span class="nf">read</span><span class="p">(</span><span class="nv">$sess_id</span><span class="p">){</span>    
+        <span class="nv">$sql</span> <span class="o">=</span> <span class="s2">"select session_data from `session` where session_id = '</span><span class="nv">$sess_id</span><span class="s2">'"</span><span class="p">;</span>    
+        <span class="nv">$result</span> <span class="o">=</span> <span class="nb">mysql_query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>    
+        <span class="k">if</span><span class="p">(</span><span class="nv">$rows</span> <span class="o">=</span> <span class="nb">mysql_fetch_assoc</span><span class="p">(</span><span class="nv">$result</span><span class="p">)){</span>  
+            <span class="k">return</span> <span class="nv">$rows</span><span class="p">[</span><span class="s1">'session_data'</span><span class="p">];</span> <span class="p">}</span>  
+        <span class="k">else</span><span class="p">{</span>  
+            <span class="k">return</span> <span class="s1">''</span><span class="p">;</span>  
+        <span class="p">}</span>    
+    <span class="p">}</span>    
+    <span class="k">function</span> <span class="nf">write</span><span class="p">(</span><span class="nv">$sess_id</span><span class="p">,</span><span class="nv">$sess_data</span><span class="p">){</span>    
+        <span class="nv">$sql</span> <span class="o">=</span> <span class="s2">"insert into `session` (session_id,session_data,session_time) values('</span><span class="nv">$sess_id</span><span class="s2">','</span><span class="nv">$sess_data</span><span class="s2">', now()) on duplicate key update session_data = '</span><span class="nv">$sess_data</span><span class="s2">' , session_time = now()"</span><span class="p">;</span>  <span class="c1">//这是为了gc()    
+</span>        <span class="k">return</span> <span class="nb">mysql_query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>    
+        
+    <span class="p">}</span>    
+    <span class="k">function</span> <span class="nf">destroy</span><span class="p">(</span><span class="nv">$sess_id</span><span class="p">){</span>    
+        <span class="k">echo</span> <span class="nx">__FUNCTION__</span><span class="p">;</span>    
+        <span class="nv">$sql</span> <span class="o">=</span> <span class="s2">"delete from `session` where session_id = '</span><span class="nv">$sess_id</span><span class="s2">'"</span><span class="p">;</span>    
+        <span class="k">return</span> <span class="nb">mysql_query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>    
+        
+    <span class="p">}</span>    
+    <span class="k">function</span> <span class="nf">gc</span><span class="p">(</span><span class="nv">$sess_id</span><span class="p">){</span>    
+        <span class="nv">$maxlifetime</span> <span class="o">=</span> <span class="nb">ini_set</span><span class="p">(</span><span class="s2">"session.gc_maxlifetime"</span><span class="p">);</span>    
+        <span class="k">echo</span> <span class="nx">__FUNCTION__</span><span class="p">;</span>    
+        <span class="nv">$sql</span> <span class="o">=</span> <span class="s2">"delete from `session` where now()-session_time &gt; '</span><span class="nv">$maxlifetime</span><span class="s2">' "</span><span class="p">;</span>    
+        <span class="k">return</span> <span class="nb">mysql_query</span><span class="p">(</span><span class="nv">$sql</span><span class="p">);</span>    
+    <span class="p">}</span>    
+    <span class="nb">header</span><span class="p">(</span><span class="s2">"content-type:text/html;charset=utf8"</span><span class="p">);</span>    
+    <span class="nb">session_start</span><span class="p">();</span>    
+    <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span><span class="o">=</span><span class="s1">'aa'</span><span class="p">;</span>    
+    <span class="c1">//echo session_id();    
+</span>    <span class="k">echo</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'name'</span><span class="p">];</span>    
+        
+
+</code></pre>
+</div>

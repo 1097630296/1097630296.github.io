@@ -1,0 +1,84 @@
+<p>1：引入js文件</p>
+
+<p>[php]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"&gt;&lt;/script&gt;  
+  
+&lt;script type="text/javascript" src="http://api.map.baidu.com/api?type=quick&amp;ak=iT46LDMO8w4i3k6blFarL7Me9RC2yQ1r&amp;v=1.0"&gt;&lt;/script&gt;  
+</code></pre>
+</div>
+
+<p>[php]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;script&gt;  
+  wx.config({  
+    appId: '',  
+    timestamp: ,  
+    nonceStr: '',  
+    signature: '',  
+    jsApiList: [  
+      // 所有要调用的 API 都要加到这个列表中  
+       'getLocation',  
+       'openLocation'  
+    ]  
+  });  
+  wx.ready(function () {  
+    // 在这里调用 API  
+        wx.getLocation({  
+                success: function (res) {  
+                    var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90  
+                    var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。  
+                    var speed = res.speed; // 速度，以米/每秒计  
+                    var accuracy = res.accuracy; // 位置精度  
+                    localStorage.setItem("latitude", latitude);  
+                        localStorage.setItem("longitude", longitude);  
+                      
+                    //var data = {  
+                    //  latitude: latitude,  
+                    //  longitude: longitude  
+                    //};  
+                    // alert(JSON.stringify(data));  
+            $.ajax({  
+            url: 'http://api.map.baidu.com/geocoder/v2/?ak=btsVVWf0TM1zUBEbzFz6QqWF&amp;callback=renderReverse&amp;location=' + latitude + ',' + longitude + '&amp;output=json&amp;pois=1',  
+            type: "get",  
+            dataType: "jsonp",  
+            jsonp: "callback",  
+            success: function (data) {  
+                console.log(data);  
+                var name = (data.result.formatted_address);  
+                   
+                   
+                 //var map=JSON.stringify(name);  
+                             //alert(map);die;  
+                 //var map1=map.substr(1);  
+                 //var map1=name(start,stop);  
+                 //alert(name);die;  
+                   
+                 $("#txt_dw").val(name);    
+                    
+                if (typeof callback == "function") {  
+                    callback(data);  
+                }  
+  
+            }  
+         });  
+             //var map = new BMap.Map("allmap");  
+                     //var point = new BMap.Point(116.331398,39.897445);  
+                     //var gc = new BMap.Geocoder();  
+                     //gc.getLocation(point, function(rs){  
+                     //var addComp = rs.addressComponents;  
+                     //alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);  
+                     //});  
+                      
+  
+                 }  
+      
+  
+      
+                 });  
+    
+ });  
+&lt;/script&gt;  
+</code></pre>
+</div>
+

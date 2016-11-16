@@ -1,0 +1,183 @@
+<p>Session信息入Redis</p>
+
+<p>为什么要把SESSION保存在缓存</p>
+
+<p>就PHP来说，语言本身支持的session是以文件的方式保存到磁盘文件中，保存在指定的文件夹中，保存的路径可以在配置文件中设置或者在程序中使用函数session_save_path()进行设置，但是这么做有弊端，</p>
+
+<p>第一就是保存到文件系统中，效率低，只要有用到session就会从好多个文件中查找指定的sessionid，效率很低。</p>
+
+<p>第二就是当用到多台服务器的时候可能会出现，session丢失问题（其实是保存在了其他服务器上）。</p>
+
+<p>当然了，保存在缓存中可以解决上面的问题，如果使用php本身的session函数，可以使用 session_set_save_handler()函数很方便的对session的处理过程进行重新控制。如果不用php的session系列函数， 可以自己编写个类似的session函数，也是可以的，我现在做的这个项目就是这样，会根据用户的mid、登录时间进行求hash作为 sessionId，每次请求的时候都必须加上sessionId才算合法（第一次登录的时候是不需要的，这个时候会创建sessionId，返回给客户 端），这么做也很方便、简洁高效的。当然了，我这篇文章主要说的是在php自身的SESSION中”做做手脚”。</p>
+
+<p>SESSION保存在缓存中</p>
+
+<p>php将缓存保存到redis中，可以使用配置文件，对session的处理和保存做修改，当然了，在程序中使用ini_set()函数去修改也可以，这个很方便测试，我这里就使用这种方式，当然了，要是生产环境还是建议使用配置文件。</p>
+
+<p>如果想简单操作session入redis操作可以将一下代码运行一下</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nb">ini_set</span><span class="p">(</span><span class="s2">"session.save_handler"</span><span class="p">,</span> <span class="s2">"redis"</span><span class="p">);</span>
+
+<span class="nb">ini_set</span><span class="p">(</span><span class="s2">"session.save_path"</span><span class="p">,</span> <span class="s2">"tcp://localhost:6379"</span><span class="p">);</span>
+
+<span class="nb">session_start</span><span class="p">();</span>
+
+<span class="nb">header</span><span class="p">(</span><span class="s2">"Content-type:text/html;charset=utf-8"</span><span class="p">);</span>
+
+<span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'view'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'zhangsan'</span><span class="p">;</span>
+
+<span class="k">echo</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'view'</span><span class="p">];</span>
+
+</code></pre>
+</div>
+<p>这里设置session.save_handler方式为redis，session.save_path为redis的地址和端口，设置之后刷新，再回头查看redis，会发现redis中的生成了sessionId，sessionId和浏览器请求的是一样的，</p>
+
+<p>如果是memcache</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="nb">ini_set</span><span class="p">(</span><span class="s2">"session.save_handler"</span><span class="p">,</span> <span class="s2">"memcache"</span><span class="p">);</span>
+
+<span class="nb">ini_set</span><span class="p">(</span><span class="s2">"session.save_path"</span><span class="p">,</span> <span class="s2">"tcp://localhost:11211"</span><span class="p">);</span>
+
+<span class="nb">session_start</span><span class="p">();</span>
+
+<span class="nb">header</span><span class="p">(</span><span class="s2">"Content-type:text/html;charset=utf-8"</span><span class="p">);</span>
+
+<span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'view'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'zhangsan'</span><span class="p">;</span>
+
+<span class="k">echo</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'view'</span><span class="p">];</span>
+
+</code></pre>
+</div>
+<p>也可以使用</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>
+Session_set_save_handler(‘open’,’close’,’ read’,’ write’,’ destory’,’ gc’);
+</code></pre>
+</div>
+<p>用法如下自定义一个Redis_session类</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+
+<span class="k">class</span> <span class="nc">RedisSession</span><span class="p">{</span>
+
+    <span class="k">private</span> <span class="nv">$_redis</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+
+        <span class="s1">'handler'</span> <span class="o">=&gt;</span> <span class="kc">null</span><span class="p">,</span> <span class="c1">//数据库连接句柄
+</span>
+        <span class="s1">'host'</span> <span class="o">=&gt;</span> <span class="kc">null</span><span class="p">,</span>   <span class="c1">//redis端口号
+</span>
+        <span class="s1">'port'</span> <span class="o">=&gt;</span> <span class="kc">null</span><span class="p">,</span>
+
+    <span class="p">);</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">__construct</span><span class="p">(</span><span class="nv">$array</span> <span class="o">=</span> <span class="k">array</span><span class="p">()){</span>
+
+        <span class="nb">isset</span><span class="p">(</span><span class="nv">$array</span><span class="p">[</span><span class="s1">'host'</span><span class="p">])</span><span class="o">?</span><span class="nv">$array</span><span class="p">[</span><span class="s1">'host'</span><span class="p">]</span><span class="o">:</span><span class="s2">"false"</span><span class="p">;</span>
+
+        <span class="nb">isset</span><span class="p">(</span><span class="nv">$array</span><span class="p">[</span><span class="s1">'port'</span><span class="p">])</span><span class="o">?</span><span class="nv">$array</span><span class="p">[</span><span class="s1">'host'</span><span class="p">]</span><span class="o">:</span><span class="s2">"false"</span><span class="p">;</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span> <span class="o">=</span> <span class="nb">array_merge</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span><span class="p">,</span> <span class="nv">$array</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">begin</span><span class="p">(){</span>
+
+        <span class="c1">//设置session处理函数
+</span>
+        <span class="nb">session_set_save_handler</span><span class="p">(</span>
+
+            <span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s1">'open'</span><span class="p">),</span>
+
+            <span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s1">'close'</span><span class="p">),</span>
+
+            <span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s1">'read'</span><span class="p">),</span>
+
+            <span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s1">'write'</span><span class="p">),</span>
+
+            <span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s1">'destory'</span><span class="p">),</span>
+
+            <span class="k">array</span><span class="p">(</span><span class="nv">$this</span><span class="p">,</span> <span class="s1">'gc'</span><span class="p">)</span>
+
+        <span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">open</span><span class="p">(){</span>
+
+        <span class="nv">$redis</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Redis</span><span class="p">();</span>
+
+        <span class="nv">$redis</span><span class="o">-&gt;</span><span class="na">connect</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span><span class="p">[</span><span class="s1">'host'</span><span class="p">],</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span><span class="p">[</span><span class="s1">'port'</span><span class="p">]);</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$redis</span><span class="p">){</span>
+
+            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+
+        <span class="p">}</span>
+
+ 
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span><span class="p">[</span><span class="s1">'handler'</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$redis</span><span class="p">;</span>
+
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">gc</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="p">}</span>
+
+    <span class="c1">//关
+</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">close</span><span class="p">(){</span>
+
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span><span class="p">[</span><span class="s1">'handler'</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">close</span><span class="p">();</span>
+
+    <span class="p">}</span>
+
+    <span class="c1">//读
+</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">read</span><span class="p">(</span><span class="nv">$session_id</span><span class="p">){</span>
+
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span><span class="p">[</span><span class="s1">'handler'</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="nv">$session_id</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="c1">//写
+</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">write</span><span class="p">(</span><span class="nv">$sessionId</span><span class="p">,</span> <span class="nv">$sessionData</span><span class="p">){</span>
+
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span><span class="p">[</span><span class="s1">'handler'</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">set</span><span class="p">(</span><span class="nv">$sessionId</span><span class="p">,</span> <span class="nv">$sessionData</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">destory</span><span class="p">(</span><span class="nv">$sessionId</span><span class="p">){</span>
+
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span><span class="p">[</span><span class="s1">'handler'</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">delete</span><span class="p">(</span><span class="nv">$sessionId</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span> <span class="kc">false</span><span class="p">;</span>
+
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">gc</span><span class="p">(){</span>
+
+        <span class="c1">//获取所有sessionid，让过期的释放掉
+</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">_redis</span><span class="p">[</span><span class="s1">'handler'</span><span class="p">]</span><span class="o">-&gt;</span><span class="na">keys</span><span class="p">(</span><span class="s2">"*"</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="nv">$ses</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">RedisSession</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'host'</span><span class="o">=&gt;</span><span class="s1">'127.0.0.1'</span><span class="p">,</span><span class="s1">'port'</span><span class="o">=&gt;</span><span class="s1">'6379'</span><span class="p">));</span>
+
+<span class="nv">$ses</span><span class="o">-&gt;</span><span class="na">begin</span><span class="p">();</span>
+
+<span class="nb">session_start</span><span class="p">();</span>
+
+<span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span><span class="o">=</span><span class="s1">'zhangsan'</span><span class="p">;</span>
+
+<span class="k">echo</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">'name'</span><span class="p">];</span>
+
+ 
+</code></pre>
+</div>
+
+<p>这样就可以实现session数据如redis代码执行过程中必须安装redis才可以</p>

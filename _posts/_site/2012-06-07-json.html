@@ -1,0 +1,28 @@
+<p>[php]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;script&gt;  
+    $(function(){  
+        $('#button').click(function(){  
+            var pid=$('#select').val();  
+           // alert(pid);  
+            var start=$('.start').val();  
+            var over=$('.over').val();  
+  
+  
+            $.getJSON("b.php",{pid:pid,start:start,over:over},function(msg){  
+  
+  
+                var str='';  
+                for(var i=0;i&lt;msg['arr'].length;i++)  
+                {  
+                    str=str+"&lt;tr&gt;&lt;td&gt;"+msg['arr'][i].name+"&lt;/td&gt;&lt;/tr&gt;";  
+                }  
+                $('div').html(str);  
+            })  
+        })  
+    })  
+  
+&lt;/script&gt;  
+</code></pre>
+</div>
+

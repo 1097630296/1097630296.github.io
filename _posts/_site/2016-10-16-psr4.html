@@ -1,0 +1,83 @@
+<h2 id="section">1. 概况</h2>
+
+<p>这个 PSR 描述的是通过文件路径<a href="http://php.net/autoload">自动载入</a>类的指南；它作为对 <a href="https://github.com/hfcorriez/fig-standards/tree/master/accepted/zh_CN/PSR-0.md">PSR-0</a> 的补充；根据这个
+指导如何规范存放文件来自动载入；</p>
+
+<h2 id="specification">2. 说明（Specification）</h2>
+
+<ol>
+  <li>
+    <p>术语「类」是一个泛称；它包含类，接口，traits 以及其他类似的结构；</p>
+  </li>
+  <li>
+    <p>完全限定类名应该类似如下范例：</p>
+
+    <p>&lt;NamespaceName&gt;(&lt;SubNamespaceNames&gt;)*&lt;ClassName&gt;</p>
+
+    <ol>
+      <li>完全限定类名必须有一个顶级命名空间（Vendor Name）；</li>
+      <li>完全限定类名可以有多个子命名空间；</li>
+      <li>完全限定类名应该有一个终止类名；</li>
+      <li>下划线在完全限定类名中是没有特殊含义的；</li>
+      <li>字母在完全限定类名中可以是任何大小写的组合；</li>
+      <li>所有类名必须以大小写敏感的方式引用；</li>
+    </ol>
+  </li>
+  <li>
+    <p>当从完全限定类名载入文件时：</p>
+
+    <ol>
+      <li>在完全限定类名中，连续的一个或几个子命名空间构成的命名空间前缀（不包括顶级命名空间的分隔符），至少对应着至少一个基础目录。</li>
+      <li>在「命名空间前缀」后的连续子命名空间名称对应一个「基础目录」下的子目录，其中的命名
+空间分隔符表示目录分隔符。子目录名称必须和子命名空间名大小写匹配；</li>
+      <li>终止类名对应一个以 <code class="highlighter-rouge">.php</code> 结尾的文件。文件名必须和终止类名大小写匹配；</li>
+    </ol>
+  </li>
+  <li>
+    <p>自动载入器的实现不可抛出任何异常，不可引发任何等级的错误；也不应返回值；</p>
+  </li>
+</ol>
+
+<h2 id="section-1">3. 范例</h2>
+
+<p>如下表格展示的是与完全限定类名、命名空间前缀和基础目录相对应的文件路径：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>完全限定类名</th>
+      <th>命名空间前缀</th>
+      <th>基础目录</th>
+      <th>实际的文件路径</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>\Acme\Log\Writer\File_Writer</td>
+      <td>Acme\Log\Writer</td>
+      <td>./acme-log-writer/lib/</td>
+      <td>./acme-log-writer/lib/File_Writer.php</td>
+    </tr>
+    <tr>
+      <td>\Aura\Web\Response\Status</td>
+      <td>Aura\Web</td>
+      <td>/path/to/aura-web/src/</td>
+      <td>/path/to/aura-web/src/Response/Status.php</td>
+    </tr>
+    <tr>
+      <td>\Symfony\Core\Request</td>
+      <td>Symfony\Core</td>
+      <td>./vendor/Symfony/Core/</td>
+      <td>./vendor/Symfony/Core/Request.php</td>
+    </tr>
+    <tr>
+      <td>\Zend\Acl</td>
+      <td>Zend</td>
+      <td>/usr/includes/Zend/</td>
+      <td>/usr/includes/Zend/Acl.php</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>例子中的自动载入器非常适应这个指南，请参照 <a href="http://www.php-fig.org/psr/psr-4/PSR-4-autoloader-examples.md">示例文件</a>。由于可能随时变更，实例不能作为指南的一部分。</p>
+

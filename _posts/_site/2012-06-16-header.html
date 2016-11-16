@@ -1,0 +1,34 @@
+<p>Content-Type: xxxx/yyyy
+Location: xxxx:yyyy/zzzz
+Status: nnn xxxxxx
+在新的多型标头规格 (Multipart MIME) 方可以出现二次以上。</p>
+
+<p>使用范例
+范例一: 本例使浏览器重定向到 PHP 的官方网站。</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?</span><span class="nx">PHP</span>
+<span class="nx">Header</span><span class="p">(</span><span class="s2">"Location: http://www.php.net"</span><span class="p">;);</span>
+<span class="k">exit</span><span class="p">;</span>
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+<p>范例二: 要使用者每次都能得到最新的资料，而不是 Proxy 或 cache 中的资料，可以使用下列的标头</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nb">header</span><span class="p">(</span><span class="s2">"Expires: Mon, 26 Jul 1997 05:00:00 GMT"</span><span class="p">);</span>
+<span class="nb">header</span><span class="p">(</span><span class="s2">"Last-Modified: "</span> <span class="o">.</span> <span class="nb">gmdate</span><span class="p">(</span><span class="s2">"D, d M Y H:i:s"</span><span class="p">)</span> <span class="o">.</span> <span class="s2">"GMT"</span><span class="p">);</span>
+<span class="nb">header</span><span class="p">(</span><span class="s2">"Cache-Control: no-cache, must-revalidate"</span><span class="p">);</span>
+<span class="nb">header</span><span class="p">(</span><span class="s2">"Pragma: no-cache"</span><span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>
+<p>范例三: 让使用者的浏览器出现找不到档案的信息。
+<?php
+header("Status: 404 Not Found");
+?>
+范例四:让使用者下载档案。</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+<span class="nb">header</span><span class="p">(</span><span class="s2">"Content-type: application/x-gzip"</span><span class="p">);</span>
+<span class="nb">header</span><span class="p">(</span><span class="s2">"Content-Disposition: attachment; filename=文件名"</span><span class="p">);</span>
+<span class="nb">header</span><span class="p">(</span><span class="s2">"Content-Descrīption: PHP3 Generated Data"</span><span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre>
+</div>

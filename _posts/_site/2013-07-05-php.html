@@ -1,0 +1,66 @@
+<p>pdo防止sql注入预处理</p>
+
+<p>1.查询</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function dologin2(){  
+    $dsn = "mysql:host=127.0.0.1;dbname=php7";//pdo 连接方法  
+    $db = new PDO($dsn, 'root', 'root',array(PDO::MYSQL_ATTR_INIT_COMMAND =&gt; "set names utf8"));  
+    $name=$_POST['name'];//$name="zhangsan' or 'a' ='a"  
+    $pwd=$_POST['pwd'];  
+    /*  
+    $count = $db-&gt;exec("insert into pdo1(name,pwd) value('$name','$pwd')");  
+    echo $count;  
+    */  
+    $sql="SELECT * FROM pdo1 where name='$name' and pwd='$pwd'";  
+    $sql="select * from pdo1 where name = ? and pwd = ?";  
+    $stmt = $db-&gt;prepare($sql);  
+    $exeres = $stmt-&gt;execute(array($name,$pwd));  
+    if ($exeres) {  
+        while ($row = $stmt-&gt;fetch(PDO::FETCH_ASSOC)) {  
+            setcookie('name',$name);  
+            redirect("welcome/asdf");  
+        }  
+    }  
+  
+}  
+</code></pre>
+</div>
+
+<p>2.添加</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;?php  
+    header("content-type:text/html;charset=utf-8");  
+    $ch = curl_init();  
+    $url ='http://apis.baidu.com/apistore/iplookupservice/iplookup?ip=117.89.65.68';  
+    $header = array(  
+        'apikey: 10d4752cc594de7808c253fccd754832',  
+    );  
+    curl_setopt($ch, CURLOPT_HTTPHEADER  , $header);  
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);  
+    curl_setopt($ch , CURLOPT_URL , $url);  
+    $res = curl_exec($ch);  
+    $arr=json_decode($res,true);  
+    //print_r($json);die;  
+    $dsn = "mysql:host=localhost;dbname=php7";  
+    $pdo=new PDO($dsn,'root','root',array(PDO::MYSQL_ATTR_INIT_COMMAND=&gt;'set names utf8'));  
+    $stmt=$pdo-&gt;prepare("insert into day15(ip,country,city,district,carrier,province)values(:ip,:co,:ci,:di,:ca,:pr)");  
+    $stmt-&gt;bindparam("ip",$arr['retData']['ip']);  
+    $stmt-&gt;bindparam("co",$arr['retData']['country']);  
+    $stmt-&gt;bindparam("ci",$arr['retData']['city']);  
+    $stmt-&gt;bindparam("di",$arr['retData']['district']);  
+    $stmt-&gt;bindparam("ca",$arr['retData']['carrier']);  
+    $stmt-&gt;bindparam("pr",$arr['retData']['province']);  
+    if($stmt-&gt;execute()){  
+        echo "执行成功";  
+        echo "最后插入的ID:".$pdo-&gt;lastInsertId();  
+    }else{  
+        echo "执行失败";  
+    }  
+?&gt;  
+</code></pre>
+</div>
+

@@ -1,0 +1,51 @@
+<p>安装Redis</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>http://www.redis.NET.cn/download
+
+    $ wget http://download.redis.io/releases/redis-3.0.6.tar.gz
+    $ tar xzf redis-3.0.6.tar.gz
+    $ cd redis-3.0.6
+    $ make #如果make失败,请安装gcc   yum install gcc  重新解压安装
+</code></pre>
+</div>
+<p>使用：</p>
+
+<p>二进制文件是编译完成后在src目录下. 运行如下:</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>    $ src/redis-server
+</code></pre>
+</div>
+<p>你能使用Redis的内置客户端进行进行redis代码的编写:</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>    $ src/redis-cli
+    redis&gt; set foo bar
+    OK
+    redis&gt; get foo
+    "bar"
+
+</code></pre>
+</div>
+<p>PHP 使用 redis</p>
+
+<p>下载地址：https://github.com/phpredis/phpredis/releases （最高版本）</p>
+
+<div class="language-php highlighter-rouge"><pre class="highlight"><code> $ wget https://github.com/phpredis/phpredis/archive/2.2.7.tar.gz
+ $ tar zxvf 2.2.7.tar.gz
+ $ cd phpredis-2.2.7                      # 进入 phpredis 目录
+ $ /usr/bin/phpize              # php安装后的路径
+ (如果不成功,请安装php-devel   yum install php-devel )
+ $ ./configure --with-php-config=/usr/bin/php-config
+ $ make <span class="err">&amp;&amp;</span> make install
+</code></pre>
+</div>
+
+<p>修改php.ini文件</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>vi /etc/php.ini
+</code></pre>
+</div>
+<p>添加</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>extension=redis.so
+</code></pre>
+</div>
+<p>重启apache</p>
+<div class="language-php highlighter-rouge"><pre class="highlight"><code>systemctl restart httpd.service #重启apache
+ 
+</code></pre>
+</div>

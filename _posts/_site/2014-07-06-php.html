@@ -1,0 +1,46 @@
+<div class="highlighter-rouge"><pre class="highlight"><code>1.调用方法 [python] 
+
+function __construct(){  
+        parent::__construct();  
+  
+    }  
+</code></pre>
+</div>
+
+<p>2.查出表名表中必须有名称，原来ID，父级ID</p>
+
+<p>[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function aaaa(){  
+    $arr=$this-&gt;db-&gt;get("表名")-&gt;result_array();  
+    $list['list']=$this-&gt;sel_dg($arr,$pid=0,$level=0);  
+    $this-&gt;load-&gt;view("good/aaa",$list);  
+}  
+</code></pre>
+</div>
+
+<p>3.把查出来的数据进行循环<br />
+[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public function sel_dg($arr,$parent_id=0,$level=0){  
+        static $data = array();  
+        foreach($arr as $k=&gt;$v) {  
+            if($v['parent_id']==$parent_id){  
+                $v['level']=$level;  
+                $data[]=$v;  
+                $this-&gt;sel_dg($arr,$v['cat_id'],$level+1);  
+            }  
+        }  
+        return $data;  
+    }  
+</code></pre>
+</div>
+
+<p>4.调到PHP页面进行输出
+[python]</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;?php echo str_repeat('      ',$v['level']);?&gt;  
+  
+&lt;?php echo $v['cat_name']?&gt;  
+</code></pre>
+</div>
